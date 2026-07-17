@@ -1,0 +1,258 @@
+/* === VARIABEL WARNA & DASAR === */
+:root {
+    --bg-color: #070707; 
+    --text-color: #e0e0e0;
+    --neon-white: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    overflow-x: hidden;
+}
+
+#shader-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    background-color: #000;
+    pointer-events: none;
+}
+
+/* === NAVIGASI === */
+nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 25px 10%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(7, 7, 7, 0.4);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    z-index: 1000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--neon-white);
+    text-decoration: none;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+}
+
+.nav-links a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 400;
+    transition: 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: var(--neon-white);
+    text-shadow: 0 0 8px var(--neon-white);
+}
+
+/* === HERO SECTION === */
+.hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 10%;
+    position: relative;
+}
+
+.hero h1 {
+    font-size: 4.5rem;
+    color: var(--neon-white);
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px rgba(255,255,255,0.7), 0 0 20px rgba(255,255,255,0.3);
+}
+
+.typing-container {
+    font-size: 1.6rem;
+    font-weight: 300;
+    margin-bottom: 40px;
+    color: #cccccc;
+    height: 40px;
+}
+
+.typing-text::after {
+    content: '|';
+    animation: blink 0.7s infinite;
+    color: var(--neon-white);
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* === TOMBOL NEON === */
+.neon-btn {
+    display: inline-block;
+    padding: 12px 35px;
+    color: var(--bg-color);
+    background-color: var(--neon-white);
+    border: 2px solid var(--neon-white);
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.neon-btn:hover {
+    background-color: transparent;
+    color: var(--neon-white);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.8);
+    transform: translateY(-3px);
+}
+
+/* === SHADER CONTROLS === */
+.shader-controls {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    background: rgba(7, 7, 7, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 8px 15px;
+    border-radius: 30px;
+    display: flex;
+    gap: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.ctrl-btn {
+    padding: 10px 18px;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.05);
+    color: #ccc;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.ctrl-btn:hover {
+    border-color: var(--neon-white);
+    color: var(--neon-white);
+}
+
+.ctrl-btn.active {
+    background-color: #ffffff;
+    color: #000000;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+    border-color: #ffffff;
+}
+
+/* === SECTION PORTOFOLIO === */
+.portfolio {
+    padding: 100px 10%;
+    text-align: center;
+    background: rgba(7, 7, 7, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+.section-title {
+    font-size: 2.5rem;
+    color: var(--neon-white);
+    margin-bottom: 50px;
+    text-shadow: 0 0 8px rgba(255,255,255,0.6);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.card {
+    background: rgba(17, 17, 17, 0.8);
+    padding: 40px 20px;
+    border-radius: 15px;
+    border: 1px solid #222;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.4s ease;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.card.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.card:hover {
+    border-color: var(--neon-white);
+    box-shadow: 0 0 15px rgba(255,255,255,0.3);
+    transform: translateY(-10px);
+}
+
+.card h3 {
+    color: var(--neon-white);
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+}
+
+.card p {
+    color: #888;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* === FOOTER === */
+footer {
+    padding: 80px 10% 40px 10%;
+    text-align: center;
+    background: #050505;
+    border-top: 1px solid #111;
+}
+
+footer p {
+    margin-bottom: 30px;
+    color: #888;
+}
+
+.contact-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* Responsivitas Mobile */
+@media (max-width: 768px) {
+    .hero h1 { font-size: 3rem; }
+    .nav-links { display: none; } /* Untuk web corporate asli, bagian ini biasanya diganti burger menu */
+}
