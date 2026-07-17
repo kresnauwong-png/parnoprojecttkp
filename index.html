@@ -4,27 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    <!-- Favicon (Logo di Tab Browser) -->
+    <link rel="icon" href="favicon.png" type="image/png">
+    
     <!-- SEO & Corporate Metadata -->
     <title>ParnoXAi Studio | Arsitektur & Desain Grafis Profesional</title>
     <meta name="description" content="ParnoXAi Studio menyediakan layanan Desain Rumah, Desain Perusahaan, Desain Bangunan, dan Desain Decal Kustom profesional dengan estetika modern.">
     <meta name="keywords" content="ParnoXAi, Desain Rumah, Desain Bangunan, Desain Decal, Arsitektur, Desain Perusahaan">
     <meta name="author" content="ParnoXAi">
-    
-    <!-- Open Graph (Untuk Sosial Media) -->
-    <meta property="og:title" content="ParnoXAi Studio | Desain Profesional">
-    <meta property="og:description" content="Solusi desain arsitektur dan visual kustom terbaik untuk kebutuhan Anda.">
-    <meta property="og:type" content="website">
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
-    <!-- Import Library Three.js Via CDN -->
+    <!-- Library Utama Three.js untuk Render Robot 3D -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
-        /* === VARIABEL WARNA & DASAR === */
         :root {
-            --bg-color: #070707; 
+            --bg-color: #050505; 
             --text-color: #e0e0e0;
             --neon-white: #ffffff;
         }
@@ -43,34 +40,708 @@
             overflow-x: hidden;
         }
 
-        /* === BACKGROUND SHADER CANVAS === */
-        #shader-container {
+        /* === LAYAR LOADING (SPLASH SCREEN) === */
+        #loader {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #050505;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        .loader-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--neon-white);
+            letter-spacing: 5px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        .loader-bar-container {
+            width: 200px; height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .loader-bar {
+            width: 0%; height: 100%;
+            background-color: var(--neon-white);
+            box-shadow: 0 0 10px var(--neon-white);
+            transition: width 0.1s linear;
+        }
+
+        /* === 3D ROBOT CANVAS BACKGROUND === */
+        #robot-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
             z-index: -1;
-            background-color: #000;
+            background-color: #050505;
+            cursor: grab;
+        }
+        #robot-container:active {
+            cursor: grabbing;
+        }
+
+        /* === UPGRADE: KONTROL MENYEMBUNYIKAN UI SAAT ZOOM ANIMASI === */
+        .interactive-ui {
+            opacity: 0;
             pointer-events: none;
+            transition: opacity 1.5s ease;
+        }
+        .interactive-ui.visible {
+            opacity: 1;
+            pointer-events: all;
         }
 
         /* === NAVIGASI === */
         nav {
             position: fixed;
-            top: 0;
-            width: 100%;
+            top: 0; width: 100%;
             padding: 25px 10%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(7, 7, 7, 0.4);
+            background: rgba(5, 5, 5, 0.3);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             z-index: 1000;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         }
 
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--neon-white);
+            text-decoration: none;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            transition: 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--neon-white);
+            text-shadow: 0 0 8px var(--neon-white);
+        }
+
+        /* === HERO SECTION === */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 10%;
+        }
+
+        .hero h1 {
+            font-size: 5rem;
+            color: var(--neon-white);
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(255,255,255,0.4);
+        }
+
+        .typing-container {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 40px;
+            color: #aaaaaa;
+            height: 40px;
+        }
+
+        .typing-text::after {
+            content: '|';
+            animation: blink 0.7s infinite;
+            color: var(--neon-white);
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .neon-btn {
+            display: inline-block;
+            padding: 12px 35px;
+            color: var(--bg-color);
+            background-color: var(--neon-white);
+            border: 2px solid var(--neon-white);
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+        }
+
+        .neon-btn:hover {
+            background-color: transparent;
+            color: var(--neon-white);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+            transform: translateY(-3px);
+        }
+
+        /* === PORTFOLIO / LAYANAN SECTION === */
+        .portfolio {
+            padding: 100px 10%;
+            text-align: center;
+            background: rgba(5, 5, 5, 0.85);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: var(--neon-white);
+            margin-bottom: 50px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: rgba(15, 15, 15, 0.9);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid #151515;
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(30px);
+            text-align: left;
+        }
+
+        .card.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .card:hover {
+            border-color: var(--neon-white);
+            box-shadow: 0 0 15px rgba(255,255,255,0.15);
+            transform: translateY(-10px);
+        }
+
+        .card-img-holder {
+            width: 100%; height: 180px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            background-color: #ffffff; /* Agar kontras dengan denah sketsa hitam-putih */
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .card-img-holder img {
+            width: 100%; height: 100%;
+            object-fit: contain;
+            padding: 5px;
+            transition: transform 0.5s ease;
+        }
+
+        .card-img-holder:hover img {
+            transform: scale(1.05);
+        }
+
+        .card-img-holder::after {
+            content: 'ZOOM 🔍';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4);
+            display: flex; justify-content: center; align-items: center;
+            color: #fff; font-size: 0.85rem; font-weight: 600;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+
+        .card-img-holder:hover::after { opacity: 1; }
+
+        .card h3 {
+            color: var(--neon-white);
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: #888;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* === LIGHTBOX MODAL === */
+        #lightbox {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 5, 5, 0.95);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        #lightbox.active {
+            display: flex;
+            opacity: 1;
+        }
+        #lightbox-img {
+            max-width: 90%; max-height: 85%;
+            border-radius: 8px;
+            background-color: #fff;
+            padding: 10px;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 30px; right: 40px;
+            color: #fff; font-size: 2.5rem; cursor: pointer;
+        }
+
+        /* === PENAWARAN & FORM KONTAK === */
+        footer {
+            padding: 80px 10% 40px 10%;
+            text-align: center;
+            background: #020202;
+            border-top: 1px solid #111;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto 50px auto;
+            background: rgba(10, 10, 10, 0.8);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid #151515;
+            text-align: left;
+        }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 8px; font-weight: 600; letter-spacing: 1px;
+        }
+
+        .form-control {
+            width: 100%; padding: 12px 15px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid #222; border-radius: 8px;
+            color: #fff; font-size: 0.95rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none; border-color: var(--neon-white);
+        }
+
+        select.form-control option { background-color: #050505; }
+        .form-submit-btn { width: 100%; margin-top: 10px; }
+        footer p { margin-bottom: 30px; color: #555; }
+        .contact-buttons { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3rem; }
+            .nav-links { display: none; }
+            .form-container { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Layar Loading Awal -->
+    <div id="loader">
+        <div class="loader-title">PARNOXAI STUDIO</div>
+        <div class="loader-bar-container">
+            <div class="loader-bar" id="loader-bar"></div>
+        </div>
+    </div>
+
+    <!-- 3D Robot Interactive Canvas Background -->
+    <div id="robot-container"></div>
+
+    <!-- Seluruh UI Interaktif Dibungkus Class 'interactive-ui' Agar Bisa Di-hide Saat Animasi Zoom -->
+    <div class="interactive-ui" id="ui-wrapper">
+        <nav>
+            <a href="#" class="logo">ParnoXAi.</a>
+            <ul class="nav-links">
+                <li><a href="#home">Beranda</a></li>
+                <li><a href="#projects">Layanan</a></li>
+                <li><a href="#contact">Kontak</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <!-- Hero Section -->
+            <section class="hero" id="home">
+                <h1>ParnoXAi</h1>
+                <div class="typing-container">
+                    <span class="typing-text"></span>
+                </div>
+                <a href="#projects" class="neon-btn">Mulai Eksplorasi</a>
+            </section>
+
+            <!-- Layanan Section -->
+            <section class="portfolio" id="projects">
+                <h2 class="section-title">Layanan Desain Kami</h2>
+                <div class="grid">
+                    <div class="card">
+                        <div class="card-img-holder">
+                            <img src="rumah.jpg" alt="Blueprint Desain Rumah" class="zoom-img" onerror="this.src='bangunan.jpg'">
+                        </div>
+                        <h3>Desain Rumah</h3>
+                        <p>Perencanaan visual tata ruang dan arsitektur hunian modern, minimalis, estetis, serta fungsional.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-img-holder">
+                            <img src="perusahaan.jpg" alt="Blueprint Desain Perusahaan" class="zoom-img" onerror="this.src='bangunan.jpg'">
+                        </div>
+                        <h3>Desain Perusahaan</h3>
+                        <p>Pembuatan konsep arsitektur gedung kantor komersial, interior ruang kerja profesional, dan analisis lokasi strategis.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-img-holder">
+                            <img src="bangunan.jpg" alt="Site Plan Desain Bangunan" class="zoom-img" onerror="this.src='rumah.jpg'">
+                        </div>
+                        <h3>Desain Bangunan</h3>
+                        <p>Struktur arsitektur komprehensif untuk fasilitas umum, bangunan bertingkat, dan konstruksi ketahanan jangka panjang.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-img-holder">
+                            <img src="decal.jpg" alt="Blueprint Pola Teknik Decal" class="zoom-img" onerror="this.src='rumah.jpg'">
+                        </div>
+                        <h3>Desain Decal</h3>
+                        <p>Pembuatan grafis kustom striping/decal kendaraan beresolusi tinggi dengan garis ukur presisi skala teknik cetak bodi.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer / Formulir Kerja Sama -->
+        <footer id="contact">
+            <h2 class="section-title" style="font-size: 2rem; margin-bottom: 20px;">Konsultasi Konstruksi & Grafis</h2>
+            <div class="form-container">
+                <form action="https://api.web3forms.com/submit" method="POST">
+                    <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE">
+                    <div class="form-group">
+                        <label>NAMA LENGKAP / INSTANSI</label>
+                        <input type="text" name="name" class="form-control" placeholder="Nama Anda..." required>
+                    </div>
+                    <div class="form-group">
+                        <label>ALAMAT EMAIL AKTIF</label>
+                        <input type="email" name="email" class="form-control" placeholder="nama@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>KATEGORI LAYANAN</label>
+                        <select name="service" class="form-control" required>
+                            <option value="Desain Arsitektur Rumah">Desain Arsitektur Rumah</option>
+                            <option value="Desain Gedung Perusahaan">Desain Gedung Perusahaan</option>
+                            <option value="Perencanaan Site Plan Tanah">Perencanaan Site Plan Tanah</option>
+                            <option value="Skala Cetak Decal Kendaraan">Skala Cetak Decal Kendaraan</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>DEKRIPSI LAHAN & RENCANA JANGKA PANJANG</label>
+                        <textarea name="message" rows="4" class="form-control" placeholder="Tuliskan ukuran tanah, kecocokan lokasi, serta kebutuhan struktur jangka panjang Anda..." required></textarea>
+                    </div>
+                    <button type="submit" class="neon-btn form-submit-btn">Kirim Data Kerja Sama</button>
+                </form>
+            </div>
+            <div class="contact-buttons">
+                <a href="mailto:kresnauwong@gmail.com" class="neon-btn">kresnauwong@gmail.com</a>
+                <a href="https://wa.me/6283834979782" target="_blank" rel="noopener" class="neon-btn">WhatsApp Studio</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Lightbox Modal Container -->
+    <div id="lightbox" role="dialog">
+        <span class="lightbox-close" id="lightbox-close">&times;</span>
+        <img id="lightbox-img" src="">
+    </div>
+
+    <!-- === SYSTEM LOGIC: THREE.JS 3D ROBOT ENGINE & ANIMATIONS === -->
+    <script>
+        (() => {
+            // 1. SETUP LAYAR LOADING BAR
+            const loader = document.getElementById('loader');
+            const loaderBar = document.getElementById('loader-bar');
+            let progress = 0;
+            
+            const progressInterval = setInterval(() => {
+                progress += Math.floor(Math.random() * 20) + 5;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(progressInterval);
+                    setTimeout(() => {
+                        loader.style.opacity = '0';
+                        loader.style.visibility = 'hidden';
+                        startRobotIntroAnimation(); // Pemicu animasi robot dimulai
+                    }, 300);
+                }
+                loaderBar.style.width = progress + '%';
+            }, 60);
+
+            // 2. MODUL CORE THREE.JS UNTUK EMULASI ROBOT FUTURISTIK 3D
+            const container = document.getElementById('robot-container');
+            const scene = new THREE.Scene();
+            
+            // Kamera diset agak jauh di awal
+            const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 8; 
+
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            // Sistem Pencahayaan Rim & Neon Glow ala Cuplikan Video
+            const ambientLight = new THREE.AmbientLight(0x0a0a0a, 1.5);
+            scene.add(ambientLight);
+
+            const topLight = new THREE.DirectionalLight(0xffffff, 4);
+            topLight.position.set(0, 10, 5);
+            scene.add(topLight);
+
+            const backLight = new THREE.PointLight(0xffffff, 5, 20);
+            backLight.position.set(0, 0, -4); // Efek siluet putih dari belakang teks logo
+            scene.add(backLight);
+
+            // PEMBUATAN STRUKTUR ROBOT SECARA PROSEDURAL (Supaya Ringan & Tidak Perlu File GLTF Eksternal)
+            const robotGroup = new THREE.Group();
+            
+            // Material Chrome Hitam Mengkilap (Glossy Black Metal)
+            const metalMaterial = new THREE.MeshStandardMaterial({
+                color: 0x0a0a0a, metalness: 0.9, roughness: 0.1, envMapIntensity: 1.0
+            });
+            // Material Visor Kepala / Putih Neon
+            const whiteMaterial = new THREE.MeshStandardMaterial({
+                color: 0xffffff, metalness: 0.3, roughness: 0.2, emissive: 0x222222
+            });
+
+            // Kepala Robot
+            const headGeo = new THREE.SphereGeometry(0.5, 32, 32);
+            const head = new THREE.Mesh(headGeo, metalMaterial);
+            head.position.y = 1.3;
+            head.scale.set(1, 1.1, 0.9);
+            robotGroup.add(head);
+
+            // Topeng Kaca Putih (Face Visor)
+            const visorGeo = new THREE.SphereGeometry(0.42, 32, 32, 0, Math.PI * 2, 0, Math.PI / 1.8);
+            const visor = new THREE.Mesh(visorGeo, whiteMaterial);
+            visor.position.set(0, 1.35, 0.15);
+            visor.rotation.x = 0.2;
+            robotGroup.add(visor);
+
+            // Leher
+            const neckGeo = new THREE.CylinderGeometry(0.15, 0.2, 0.25, 16);
+            const neck = new THREE.Mesh(neckGeo, metalMaterial);
+            neck.position.y = 0.95;
+            robotGroup.add(neck);
+
+            // Dada & Badan Dada Lebar (Torso)
+            const chestGeo = new THREE.CylinderGeometry(0.7, 0.3, 1.1, 32);
+            const chest = new THREE.Mesh(chestGeo, metalMaterial);
+            chest.position.y = 0.3;
+            chest.scale.set(1, 1, 0.6); // Membuat bodi agak pipih futuristik
+            robotGroup.add(chest);
+
+            // Sendi Pundak Kiri & Kanan
+            const shoulderGeo = new THREE.SphereGeometry(0.18, 16, 16);
+            const shoulderL = new THREE.Mesh(shoulderGeo, metalMaterial);
+            shoulderL.position.set(-0.85, 0.7, 0);
+            const shoulderR = shoulderL.clone();
+            shoulderR.position.x = 0.85;
+            robotGroup.add(shoulderL, shoulderR);
+
+            // Lengan Atas
+            const armGeo = new THREE.CylinderGeometry(0.12, 0.1, 0.5, 16);
+            const armL = new THREE.Mesh(armGeo, metalMaterial);
+            armL.position.set(-0.95, 0.4, 0.1);
+            armL.rotation.z = 0.2; armL.rotation.x = -0.3;
+            const armR = armL.clone();
+            armR.position.x = 0.95; armR.rotation.z = -0.2;
+            robotGroup.add(armL, armR);
+
+            scene.add(robotGroup);
+
+            // 3. STATISTIK INTERAKSI VARIABEL & LOGIKA SENSOR ANIMASI ZOOM
+            let introPhase = 'none'; // Tahapan animasi: 'none', 'zooming_in', 'zooming_out', 'ready'
+            let introTimer = 0;
+            
+            // Variabel Drag Kontrol Mouse & Jari HP
+            let isDragging = false;
+            let previousPointerPosition = { x: 0, y: 0 };
+            let targetRotationX = 0;
+            let targetRotationY = 0;
+
+            function startRobotIntroAnimation() {
+                introPhase = 'zooming_in';
+                introTimer = 0;
+                camera.position.z = 8; // Reset posisi awal kamera menjauh
+            }
+
+            // Fungsi untuk mengaktifkan UI Menu secara perlahan pasca zoom out
+            function revealMainMenuUI() {
+                const uiWrapper = document.getElementById('ui-wrapper');
+                uiWrapper.classList.add('visible');
+            }
+
+            // 4. ANIMATION LOOP (RENDER TIMELINE)
+            const clock = new THREE.Clock();
+
+            function updateAnimation() {
+                requestAnimationFrame(updateAnimation);
+                const delta = clock.getDelta();
+
+                // LOGIKA SENSOR ZOOM SESUAI PERMINTAAN USER
+                if (introPhase === 'zooming_in') {
+                    // Kamera meluncur super dekat menembus wajah robot (Menciptakan ilusi dramatis)
+                    camera.position.z -= 11 * delta; 
+                    robotGroup.rotation.y += 2 * delta; // Sembari berputar cepat
+                    
+                    if (camera.position.z <= 1.5) { // Titik puncak zoom terdalam
+                        introPhase = 'zooming_out';
+                    }
+                } 
+                else if (introPhase === 'zooming_out') {
+                    // Kamera kembali menjauh secara halus ke posisi framing ideal
+                    camera.position.z += 3 * delta;
+                    
+                    // Kembalikan sudut rotasi robot ke posisi menghadap depan secara simetris
+                    robotGroup.rotation.y += (0 - robotGroup.rotation.y) * 0.08;
+                    robotGroup.rotation.x += (0 - robotGroup.rotation.x) * 0.08;
+
+                    if (camera.position.z >= 5.5) {
+                        camera.position.z = 5.5;
+                        introPhase = 'ready'; // Selesai zoom, robot diserahkan ke user
+                        revealMainMenuUI();   // Munculkan semua tombol menu utama
+                    }
+                } 
+                else if (introPhase === 'ready') {
+                    // Efek gerak ayun halus bernapas (idle animation) jika user sedang tidak menyentuh robot
+                    if (!isDragging) {
+                        robotGroup.rotation.y += (targetRotationY - robotGroup.rotation.y) * 0.05 + Math.sin(Date.now() * 0.001) * 0.001;
+                        robotGroup.rotation.x += (targetRotationX - robotGroup.rotation.x) * 0.05 + Math.cos(Date.now() * 0.001) * 0.0005;
+                    } else {
+                        robotGroup.rotation.y += (targetRotationY - robotGroup.rotation.y) * 0.15;
+                        robotGroup.rotation.x += (targetRotationX - robotGroup.rotation.x) * 0.15;
+                    }
+                }
+
+                renderer.render(scene, camera);
+            }
+            updateAnimation();
+
+            // 5. MANAJEMEN EVENT POINTER DRAG (LAPTOP MOUSE & HP TOUCHSCREEN DRAG)
+            function onPointerDown(x, y) {
+                if (introPhase !== 'ready') return; // Kunci kontrol jika animasi zoom belum rampung
+                isDragging = true;
+                previousPointerPosition = { x, y };
+            }
+
+            function onPointerMove(x, y) {
+                if (!isDragging) return;
+                
+                const deltaMove = {
+                    x: x - previousPointerPosition.x,
+                    y: y - previousPointerPosition.y
+                };
+
+                // Geser sumbu rotasi berdasarkan jarak seretan kursor/jari tangan
+                targetRotationY += deltaMove.x * 0.007;
+                targetRotationX += deltaMove.y * 0.007;
+
+                // Batasi sudut rotasi vertikal (X) agar robot tidak jungkir balik aneh
+                targetRotationX = Math.max(-0.4, Math.min(0.4, targetRotationX));
+
+                previousPointerPosition = { x, y };
+            }
+
+            function onPointerUp() {
+                isDragging = false;
+            }
+
+            // Integrasi Event Listener Laptop (Mouse)
+            container.addEventListener('mousedown', (e) => onPointerDown(e.clientX, e.clientY));
+            window.addEventListener('mousemove', (e) => onPointerMove(e.clientX, e.clientY));
+            window.addEventListener('mouseup', onPointerUp);
+
+            // Integrasi Event Listener HP Smartphone (Touchscreen)
+            container.addEventListener('touchstart', (e) => {
+                if(e.touches.length === 1) onPointerDown(e.touches[0].clientX, e.touches[0].clientY);
+            }, { passive: true });
+            window.addEventListener('touchmove', (e) => {
+                if(e.touches.length === 1) onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
+            }, { passive: true });
+            window.addEventListener('touchend', onPointerUp);
+
+            // Penanganan Responsif Skala Ukuran Layar Browser
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            // 6. SISTEM COMPONENT TAMBAHAN (LIGHTBOX & AUTOTYPING)
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const lightboxClose = document.getElementById('lightbox-close');
+            
+            document.querySelectorAll('.card-img-holder img').forEach(img => {
+                img.addEventListener('click', () => {
+                    lightboxImg.src = img.src;
+                    lightbox.classList.add('active');
+                });
+            });
+            lightboxClose.addEventListener('click', () => lightbox.classList.remove('active'));
+            lightbox.addEventListener('click', (e) => { if(e.target !== lightboxImg) lightbox.classList.remove('active'); });
+
+            // Efek Ketik Teks Berjalan Arsitektur
+            const textArray = ["Spesialis Rencana Teknis Arsitektur.", "Sketsa Denah & Akurasi Batas Tanah.", "Perencanaan Struktur Jangka Panjang.", "Pola Desain Decal Skala Akurat."];
+            const typingText = document.querySelector(".typing-text");
+            let textIndex = 0; let charIndex = 0;
+
+            function type() {
+                if (!typingText) return;
+                if (charIndex < textArray[textIndex].length) {
+                    typingText.textContent += textArray[textIndex].charAt(charIndex);
+                    charIndex++; setTimeout(type, 60);
+                } else { setTimeout(erase, 2500); }
+            }
+            function erase() {
+                if (charIndex > 0) {
+                    typingText.textContent = textArray[textIndex].substring(0, charIndex - 1);
+                    charIndex--; setTimeout(erase, 30);
+                } else { textIndex = (textIndex + 1) % textArray.length; setTimeout(type, 400); }
+            }
+            if (typingText) setTimeout(type, 1000);
+
+            // Animasi kartu bergulir muncul (Scroll Reveal)
+            const cards = document.querySelectorAll('.card');
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if(entry.isIntersecting) { entry.target.classList.add('show'); observer.unobserve(entry.target); }
+                });
+            }, { threshold: 0.1 });
+            cards.forEach(card => observer.observe(card));
+        })();
+    </script>
+</body>
+</html>
         .logo {
             font-size: 1.5rem;
             font-weight: 700;
