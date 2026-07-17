@@ -3,20 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Favicon (Logo di Tab Browser) -->
     <link rel="icon" href="favicon.png" type="image/png">
     
-    <!-- SEO & Corporate Metadata -->
     <title>ParnoXAi Studio | Arsitektur & Desain Grafis Profesional</title>
-    <meta name="description" content="ParnoXAi Studio menyediakan layanan Desain Rumah, Desain Perusahaan, Desain Bangunan, dan Desain Decal Kustom profesional dengan estetika modern.">
-    <meta name="keywords" content="ParnoXAi, Desain Rumah, Desain Bangunan, Desain Decal, Arsitektur, Desain Perusahaan">
+    <meta name="description" content="ParnoXAi Studio menyediakan layanan Desain Rumah, Perusahaan, Bangunan, dan Decal Kustom profesional.">
     <meta name="author" content="ParnoXAi">
 
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Library Utama Three.js untuk Render Robot 3D -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
@@ -27,353 +20,127 @@
         }
 
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-            scroll-behavior: smooth;
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: 'Poppins', sans-serif; scroll-behavior: smooth;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            overflow-x: hidden;
+            background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden;
         }
 
-        /* === LAYAR LOADING (SPLASH SCREEN) === */
+        /* === LAYAR LOADING === */
         #loader {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #050505;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #050505; z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
         }
         .loader-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--neon-white);
-            letter-spacing: 5px;
-            margin-bottom: 15px;
-            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+            font-size: 1.8rem; font-weight: 700; color: var(--neon-white);
+            letter-spacing: 5px; margin-bottom: 15px;
         }
-        .loader-bar-container {
-            width: 200px; height: 6px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .loader-bar {
-            width: 0%; height: 100%;
-            background-color: var(--neon-white);
-            box-shadow: 0 0 10px var(--neon-white);
-            transition: width 0.1s linear;
-        }
+        .loader-bar-container { width: 180px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
+        .loader-bar { width: 0%; height: 100%; background-color: var(--neon-white); transition: width 0.1s linear; }
 
-        /* === 3D ROBOT CANVAS BACKGROUND === */
+        /* === 3D CANVAS BACKGROUND === */
         #robot-container {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            z-index: -1;
-            background-color: #050505;
-            cursor: grab;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
+            background-color: #050505; cursor: grab;
         }
-        #robot-container:active {
-            cursor: grabbing;
-        }
+        #robot-container:active { cursor: grabbing; }
 
-        /* === UPGRADE: KONTROL MENYEMBUNYIKAN UI SAAT ZOOM ANIMASI === */
-        .interactive-ui {
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 1.5s ease;
-        }
-        .interactive-ui.visible {
-            opacity: 1;
-            pointer-events: all;
-        }
+        /* INTERACTIVE UI ANIMATION LAYER */
+        .interactive-ui { opacity: 0; pointer-events: none; transition: opacity 1.2s ease; }
+        .interactive-ui.visible { opacity: 1; pointer-events: all; }
 
-        /* === NAVIGASI === */
+        /* NAVIGASI */
         nav {
-            position: fixed;
-            top: 0; width: 100%;
-            padding: 25px 10%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(5, 5, 5, 0.3);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            z-index: 1000;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            position: fixed; top: 0; width: 100%; padding: 25px 10%;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(5, 5, 5, 0.5); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            z-index: 1000; border-bottom: 1px solid rgba(255, 255, 255, 0.02);
         }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--neon-white); text-decoration: none; }
+        .nav-links { list-style: none; display: flex; gap: 30px; }
+        .nav-links a { color: var(--text-color); text-decoration: none; transition: 0.3s; }
+        .nav-links a:hover { color: var(--neon-white); text-shadow: 0 0 8px var(--neon-white); }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--neon-white);
-            text-decoration: none;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-        }
-
-        .nav-links {
-            list-style: none;
-            display: flex;
-            gap: 30px;
-        }
-
-        .nav-links a {
-            color: var(--text-color);
-            text-decoration: none;
-            transition: 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            color: var(--neon-white);
-            text-shadow: 0 0 8px var(--neon-white);
-        }
-
-        /* === HERO SECTION === */
-        .hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 0 10%;
-        }
-
-        .hero h1 {
-            font-size: 5rem;
-            color: var(--neon-white);
-            font-weight: 700;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
-            text-shadow: 0 0 15px rgba(255,255,255,0.4);
-        }
-
-        .typing-container {
-            font-size: 1.5rem;
-            font-weight: 300;
-            margin-bottom: 40px;
-            color: #aaaaaa;
-            height: 40px;
-        }
-
-        .typing-text::after {
-            content: '|';
-            animation: blink 0.7s infinite;
-            color: var(--neon-white);
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
+        /* HERO */
+        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 10%; }
+        .hero h1 { font-size: 4.5rem; color: var(--neon-white); font-weight: 700; margin-bottom: 10px; letter-spacing: 2px; }
+        .typing-container { font-size: 1.3rem; font-weight: 300; margin-bottom: 40px; color: #aaaaaa; height: 35px; }
+        .typing-text::after { content: '|'; animation: blink 0.7s infinite; color: var(--neon-white); }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
         .neon-btn {
-            display: inline-block;
-            padding: 12px 35px;
-            color: var(--bg-color);
-            background-color: var(--neon-white);
-            border: 2px solid var(--neon-white);
-            border-radius: 30px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-            cursor: pointer;
+            display: inline-block; padding: 12px 35px; color: #000; background-color: #fff;
+            border: 2px solid #fff; border-radius: 30px; text-decoration: none; font-weight: 600;
+            transition: all 0.3s ease; cursor: pointer;
         }
+        .neon-btn:hover { background-color: transparent; color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.4); transform: translateY(-2px); }
 
-        .neon-btn:hover {
-            background-color: transparent;
-            color: var(--neon-white);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
-            transform: translateY(-3px);
-        }
-
-        /* === PORTFOLIO / LAYANAN SECTION === */
-        .portfolio {
-            padding: 100px 10%;
-            text-align: center;
-            background: rgba(5, 5, 5, 0.85);
-            backdrop-filter: blur(10px);
-        }
-
-        .section-title {
-            font-size: 2.5rem;
-            color: var(--neon-white);
-            margin-bottom: 50px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-        }
-
+        /* PORTFOLIO SECTION */
+        .portfolio { padding: 100px 10%; text-align: center; background: rgba(5, 5, 5, 0.9); backdrop-filter: blur(10px); }
+        .section-title { font-size: 2.2rem; color: var(--neon-white); margin-bottom: 50px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        
         .card {
-            background: rgba(15, 15, 15, 0.9);
-            padding: 25px;
-            border-radius: 15px;
-            border: 1px solid #151515;
-            transition: all 0.4s ease;
-            opacity: 0;
-            transform: translateY(30px);
-            text-align: left;
+            background: #0f0f0f; padding: 25px; border-radius: 15px; border: 1px solid #1a1a1a;
+            transition: all 0.4s ease; opacity: 0; transform: translateY(30px); text-align: left;
         }
+        .card.show { opacity: 1; transform: translateY(0); }
+        .card:hover { border-color: #fff; transform: translateY(-8px); box-shadow: 0 10px 20px rgba(255,255,255,0.05); }
 
-        .card.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .card:hover {
-            border-color: var(--neon-white);
-            box-shadow: 0 0 15px rgba(255,255,255,0.15);
-            transform: translateY(-10px);
-        }
-
+        /* FIX: Perbaikan Kontainer Gambar Biar Tidak Blank Putih Silau */
         .card-img-holder {
-            width: 100%; height: 180px;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            background-color: #ffffff; /* Agar kontras dengan denah sketsa hitam-putih */
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            cursor: pointer;
-            position: relative;
-        }
-
-        .card-img-holder img {
-            width: 100%; height: 100%;
-            object-fit: contain;
-            padding: 5px;
-            transition: transform 0.5s ease;
-        }
-
-        .card-img-holder:hover img {
-            transform: scale(1.05);
-        }
-
-        .card-img-holder::after {
-            content: 'ZOOM 🔍';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4);
+            width: 100%; height: 180px; border-radius: 10px; overflow: hidden; margin-bottom: 20px;
+            background: #151515; border: 1px dashed #333; cursor: pointer; position: relative;
             display: flex; justify-content: center; align-items: center;
-            color: #fff; font-size: 0.85rem; font-weight: 600;
-            opacity: 0; transition: opacity 0.3s ease;
         }
-
+        .card-img-holder img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .card-img-holder:hover img { transform: scale(1.05); }
+        .card-img-holder::after {
+            content: 'PRATINJAU DESAIN 🔍'; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center;
+            color: #fff; font-size: 0.8rem; font-weight: 600; opacity: 0; transition: opacity 0.3s ease;
+        }
         .card-img-holder:hover::after { opacity: 1; }
 
-        .card h3 {
-            color: var(--neon-white);
-            margin-bottom: 10px;
-        }
-
-        .card p {
-            color: #888;
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-
-        /* === LIGHTBOX MODAL === */
+        /* LIGHTBOX MODAL */
         #lightbox {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5, 5, 5, 0.95);
-            z-index: 2000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.4s ease;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95);
+            z-index: 2000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s;
         }
-        #lightbox.active {
-            display: flex;
-            opacity: 1;
-        }
-        #lightbox-img {
-            max-width: 90%; max-height: 85%;
-            border-radius: 8px;
-            background-color: #fff;
-            padding: 10px;
-        }
-        .lightbox-close {
-            position: absolute;
-            top: 30px; right: 40px;
-            color: #fff; font-size: 2.5rem; cursor: pointer;
-        }
+        #lightbox.active { display: flex; opacity: 1; }
+        #lightbox-img { max-width: 90%; max-height: 80%; border-radius: 6px; background-color: #fff; padding: 5px; }
+        .lightbox-close { position: absolute; top: 25px; right: 35px; color: #fff; font-size: 2.5rem; cursor: pointer; }
 
-        /* === PENAWARAN & FORM KONTAK === */
-        footer {
-            padding: 80px 10% 40px 10%;
-            text-align: center;
-            background: #020202;
-            border-top: 1px solid #111;
-        }
-
-        .form-container {
-            max-width: 600px;
-            margin: 0 auto 50px auto;
-            background: rgba(10, 10, 10, 0.8);
-            padding: 40px;
-            border-radius: 20px;
-            border: 1px solid #151515;
-            text-align: left;
-        }
-
+        /* FOOTER & CONTACT FORM */
+        footer { padding: 80px 10% 40px 10%; text-align: center; background: #020202; border-top: 1px solid #111; }
+        .form-container { max-width: 600px; margin: 0 auto 50px auto; background: #0a0a0a; padding: 40px; border-radius: 15px; border: 1px solid #151515; text-align: left; }
         .form-group { margin-bottom: 20px; }
-        .form-group label {
-            display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 8px; font-weight: 600; letter-spacing: 1px;
-        }
-
-        .form-control {
-            width: 100%; padding: 12px 15px;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid #222; border-radius: 8px;
-            color: #fff; font-size: 0.95rem;
-            transition: border-color 0.3s ease;
-        }
-
-        .form-control:focus {
-            outline: none; border-color: var(--neon-white);
-        }
-
-        select.form-control option { background-color: #050505; }
+        .form-group label { display: block; font-size: 0.75rem; color: #888; margin-bottom: 8px; font-weight: 600; letter-spacing: 1px; }
+        .form-control { width: 100%; padding: 12px 15px; background: #111; border: 1px solid #222; border-radius: 8px; color: #fff; font-size: 0.95rem; }
+        .form-control:focus { outline: none; border-color: #fff; }
         .form-submit-btn { width: 100%; margin-top: 10px; }
-        footer p { margin-bottom: 30px; color: #555; }
+        footer p { margin-bottom: 25px; color: #444; font-size: 0.9rem; }
         .contact-buttons { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
 
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 3rem; }
-            .nav-links { display: none; }
-            .form-container { padding: 25px; }
-        }
+        @media (max-width: 768px) { .hero h1 { font-size: 2.8rem; } .nav-links { display: none; } .form-container { padding: 25px; } }
     </style>
 </head>
 <body>
 
-    <!-- Layar Loading Awal -->
+    <!-- Layar Loading -->
     <div id="loader">
         <div class="loader-title">PARNOXAI STUDIO</div>
-        <div class="loader-bar-container">
-            <div class="loader-bar" id="loader-bar"></div>
-        </div>
+        <div class="loader-bar-container"><div class="loader-bar" id="loader-bar"></div></div>
     </div>
 
-    <!-- 3D Robot Interactive Canvas Background -->
+    <!-- 3D Robot Background -->
     <div id="robot-container"></div>
 
-    <!-- Seluruh UI Interaktif Dibungkus Class 'interactive-ui' Agar Bisa Di-hide Saat Animasi Zoom -->
+    <!-- UI Wrapper -->
     <div class="interactive-ui" id="ui-wrapper">
         <nav>
             <a href="#" class="logo">ParnoXAi.</a>
@@ -385,7 +152,6 @@
         </nav>
 
         <main>
-            <!-- Hero Section -->
             <section class="hero" id="home">
                 <h1>ParnoXAi</h1>
                 <div class="typing-container">
@@ -394,769 +160,251 @@
                 <a href="#projects" class="neon-btn">Mulai Eksplorasi</a>
             </section>
 
-            <!-- Layanan Section -->
             <section class="portfolio" id="projects">
                 <h2 class="section-title">Layanan Desain Kami</h2>
                 <div class="grid">
                     <div class="card">
                         <div class="card-img-holder">
-                            <img src="rumah.jpg" alt="Blueprint Desain Rumah" class="zoom-img" onerror="this.src='bangunan.jpg'">
+                            <!-- Jika gambar tidak ada di github, otomatis tidak ngerusak layout layar -->
+                            <img src="rumah.jpg" alt="Desain Rumah" onerror="this.style.display='none'">
                         </div>
                         <h3>Desain Rumah</h3>
                         <p>Perencanaan visual tata ruang dan arsitektur hunian modern, minimalis, estetis, serta fungsional.</p>
                     </div>
                     <div class="card">
                         <div class="card-img-holder">
-                            <img src="perusahaan.jpg" alt="Blueprint Desain Perusahaan" class="zoom-img" onerror="this.src='bangunan.jpg'">
+                            <img src="perusahaan.jpg" alt="Desain Perusahaan" onerror="this.style.display='none'">
                         </div>
                         <h3>Desain Perusahaan</h3>
-                        <p>Pembuatan konsep arsitektur gedung kantor komersial, interior ruang kerja profesional, dan analisis lokasi strategis.</p>
+                        <p>Pembuatan konsep arsitektur gedung kantor komersial, interior ruang kerja profesional, dan fungsionalitas korporat.</p>
                     </div>
                     <div class="card">
                         <div class="card-img-holder">
-                            <img src="bangunan.jpg" alt="Site Plan Desain Bangunan" class="zoom-img" onerror="this.src='rumah.jpg'">
+                            <img src="bangunan.jpg" alt="Desain Bangunan" onerror="this.style.display='none'">
                         </div>
                         <h3>Desain Bangunan</h3>
-                        <p>Struktur arsitektur komprehensif untuk fasilitas umum, bangunan bertingkat, dan konstruksi ketahanan jangka panjang.</p>
+                        <p>Struktur arsitektur komprehensif untuk fasilitas umum, bangunan bertingkat, dan konstruksi modern.</p>
                     </div>
                     <div class="card">
                         <div class="card-img-holder">
-                            <img src="decal.jpg" alt="Blueprint Pola Teknik Decal" class="zoom-img" onerror="this.src='rumah.jpg'">
+                            <img src="decal.jpg" alt="Desain Decal" onerror="this.style.display='none'">
                         </div>
                         <h3>Desain Decal</h3>
-                        <p>Pembuatan grafis kustom striping/decal kendaraan beresolusi tinggi dengan garis ukur presisi skala teknik cetak bodi.</p>
+                        <p>Pembuatan grafis kustom striping/decal kendaraan beresolusi tinggi dengan konsep visual tajam.</p>
                     </div>
                 </div>
             </section>
         </main>
 
-        <!-- Footer / Formulir Kerja Sama -->
         <footer id="contact">
-            <h2 class="section-title" style="font-size: 2rem; margin-bottom: 20px;">Konsultasi Konstruksi & Grafis</h2>
             <div class="form-container">
                 <form action="https://api.web3forms.com/submit" method="POST">
                     <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE">
                     <div class="form-group">
-                        <label>NAMA LENGKAP / INSTANSI</label>
+                        <label>NAMA LENGKAP</label>
                         <input type="text" name="name" class="form-control" placeholder="Nama Anda..." required>
                     </div>
                     <div class="form-group">
-                        <label>ALAMAT EMAIL AKTIF</label>
+                        <label>ALAMAT EMAIL</label>
                         <input type="email" name="email" class="form-control" placeholder="nama@email.com" required>
                     </div>
                     <div class="form-group">
-                        <label>KATEGORI LAYANAN</label>
-                        <select name="service" class="form-control" required>
-                            <option value="Desain Arsitektur Rumah">Desain Arsitektur Rumah</option>
-                            <option value="Desain Gedung Perusahaan">Desain Gedung Perusahaan</option>
-                            <option value="Perencanaan Site Plan Tanah">Perencanaan Site Plan Tanah</option>
-                            <option value="Skala Cetak Decal Kendaraan">Skala Cetak Decal Kendaraan</option>
-                        </select>
+                        <label>DESKRIPSI PROYEK LAHAN</label>
+                        <textarea name="message" rows="4" class="form-control" placeholder="Detail lokasi lahan & ukuran tanah..." required></textarea>
                     </div>
-                    <div class="form-group">
-                        <label>DEKRIPSI LAHAN & RENCANA JANGKA PANJANG</label>
-                        <textarea name="message" rows="4" class="form-control" placeholder="Tuliskan ukuran tanah, kecocokan lokasi, serta kebutuhan struktur jangka panjang Anda..." required></textarea>
-                    </div>
-                    <button type="submit" class="neon-btn form-submit-btn">Kirim Data Kerja Sama</button>
+                    <button type="submit" class="neon-btn form-submit-btn">Kirim Formulir Kerja Sama</button>
                 </form>
             </div>
             <div class="contact-buttons">
                 <a href="mailto:kresnauwong@gmail.com" class="neon-btn">kresnauwong@gmail.com</a>
-                <a href="https://wa.me/6283834979782" target="_blank" rel="noopener" class="neon-btn">WhatsApp Studio</a>
+                <a href="https://wa.me/6283834979782" target="_blank" rel="noopener" class="neon-btn">WhatsApp Fast Response</a>
             </div>
         </footer>
     </div>
 
-    <!-- Lightbox Modal Container -->
+    <!-- Lightbox Modal -->
     <div id="lightbox" role="dialog">
         <span class="lightbox-close" id="lightbox-close">&times;</span>
         <img id="lightbox-img" src="">
     </div>
 
-    <!-- === SYSTEM LOGIC: THREE.JS 3D ROBOT ENGINE & ANIMATIONS === -->
+    <!-- === ENGINE JAVASCRIPT FIXED VERSION === -->
     <script>
         (() => {
-            // 1. SETUP LAYAR LOADING BAR
+            // 1. LOADING MANAGEMENT
             const loader = document.getElementById('loader');
             const loaderBar = document.getElementById('loader-bar');
             let progress = 0;
-            
             const progressInterval = setInterval(() => {
-                progress += Math.floor(Math.random() * 20) + 5;
+                progress += Math.floor(Math.random() * 15) + 5;
                 if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(progressInterval);
+                    progress = 100; clearInterval(progressInterval);
                     setTimeout(() => {
-                        loader.style.opacity = '0';
-                        loader.style.visibility = 'hidden';
-                        startRobotIntroAnimation(); // Pemicu animasi robot dimulai
-                    }, 300);
+                        loader.style.opacity = '0'; loader.style.visibility = 'hidden';
+                        startRobotIntro();
+                    }, 200);
                 }
                 loaderBar.style.width = progress + '%';
-            }, 60);
+            }, 50);
 
-            // 2. MODUL CORE THREE.JS UNTUK EMULASI ROBOT FUTURISTIK 3D
+            // 2. THREE.JS CYBER CORE ROBOT (ANTI-BUG & ULTRA GLOSSY)
             const container = document.getElementById('robot-container');
             const scene = new THREE.Scene();
-            
-            // Kamera diset agak jauh di awal
             const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 8; 
+            camera.position.z = 12;
 
             const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             container.appendChild(renderer.domElement);
 
-            // Sistem Pencahayaan Rim & Neon Glow ala Cuplikan Video
-            const ambientLight = new THREE.AmbientLight(0x0a0a0a, 1.5);
-            scene.add(ambientLight);
+            // Lighting Premium System
+            const ambient = new THREE.AmbientLight(0x111111, 2);
+            scene.add(ambient);
+            const frontLight = new THREE.DirectionalLight(0xffffff, 4);
+            frontLight.position.set(0, 4, 5);
+            scene.add(frontLight);
+            const blueLight = new THREE.PointLight(0xffffff, 5, 15);
+            blueLight.position.set(0, 0, -2);
+            scene.add(blueLight);
 
-            const topLight = new THREE.DirectionalLight(0xffffff, 4);
-            topLight.position.set(0, 10, 5);
-            scene.add(topLight);
+            // Pembuatan Model Inti Robot Siber Mekanik (Glosier Krom)
+            const botGroup = new THREE.Group();
+            const chromeMat = new THREE.MeshStandardMaterial({ color: 0x0f0f12, metalness: 0.95, roughness: 0.08 });
+            const neonMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
-            const backLight = new THREE.PointLight(0xffffff, 5, 20);
-            backLight.position.set(0, 0, -4); // Efek siluet putih dari belakang teks logo
-            scene.add(backLight);
+            // Core Sphere (Badan Utama)
+            const coreGeo = new THREE.SphereGeometry(1.4, 32, 32);
+            const coreMesh = new THREE.Mesh(coreGeo, chromeMat);
+            botGroup.add(coreMesh);
 
-            // PEMBUATAN STRUKTUR ROBOT SECARA PROSEDURAL (Supaya Ringan & Tidak Perlu File GLTF Eksternal)
-            const robotGroup = new THREE.Group();
-            
-            // Material Chrome Hitam Mengkilap (Glossy Black Metal)
-            const metalMaterial = new THREE.MeshStandardMaterial({
-                color: 0x0a0a0a, metalness: 0.9, roughness: 0.1, envMapIntensity: 1.0
-            });
-            // Material Visor Kepala / Putih Neon
-            const whiteMaterial = new THREE.MeshStandardMaterial({
-                color: 0xffffff, metalness: 0.3, roughness: 0.2, emissive: 0x222222
-            });
+            // Visor Lampu Robot (Kacamata Siber)
+            const visorGeo = new THREE.TorusGeometry(1.41, 0.08, 8, 40, Math.PI / 2);
+            const visorMesh = new THREE.Mesh(visorGeo, neonMat);
+            visorMesh.rotation.x = Math.PI / 2;
+            visorMesh.rotation.z = -Math.PI / 4;
+            botGroup.add(visorMesh);
 
-            // Kepala Robot
-            const headGeo = new THREE.SphereGeometry(0.5, 32, 32);
-            const head = new THREE.Mesh(headGeo, metalMaterial);
-            head.position.y = 1.3;
-            head.scale.set(1, 1.1, 0.9);
-            robotGroup.add(head);
+            // Orbit Ring Outer (Cincin Pelindung Mengambang)
+            const ringGeo = new THREE.TorusGeometry(2.3, 0.04, 8, 60);
+            const ringMesh = new THREE.Mesh(ringGeo, chromeMat);
+            ringMesh.rotation.x = Math.PI / 3;
+            botGroup.add(ringMesh);
 
-            // Topeng Kaca Putih (Face Visor)
-            const visorGeo = new THREE.SphereGeometry(0.42, 32, 32, 0, Math.PI * 2, 0, Math.PI / 1.8);
-            const visor = new THREE.Mesh(visorGeo, whiteMaterial);
-            visor.position.set(0, 1.35, 0.15);
-            visor.rotation.x = 0.2;
-            robotGroup.add(visor);
+            scene.add(botGroup);
 
-            // Leher
-            const neckGeo = new THREE.CylinderGeometry(0.15, 0.2, 0.25, 16);
-            const neck = new THREE.Mesh(neckGeo, metalMaterial);
-            neck.position.y = 0.95;
-            robotGroup.add(neck);
+            // 3. SEAMLESS ZOOMING SYSTEM (Brief User: Hide UI -> Zoom In -> Zoom Out -> Show UI)
+            let viewPhase = 'hold'; 
+            let clock = new THREE.Clock();
 
-            // Dada & Badan Dada Lebar (Torso)
-            const chestGeo = new THREE.CylinderGeometry(0.7, 0.3, 1.1, 32);
-            const chest = new THREE.Mesh(chestGeo, metalMaterial);
-            chest.position.y = 0.3;
-            chest.scale.set(1, 1, 0.6); // Membuat bodi agak pipih futuristik
-            robotGroup.add(chest);
+            function startRobotIntro() {
+                viewPhase = 'zooming_in';
+            }
 
-            // Sendi Pundak Kiri & Kanan
-            const shoulderGeo = new THREE.SphereGeometry(0.18, 16, 16);
-            const shoulderL = new THREE.Mesh(shoulderGeo, metalMaterial);
-            shoulderL.position.set(-0.85, 0.7, 0);
-            const shoulderR = shoulderL.clone();
-            shoulderR.position.x = 0.85;
-            robotGroup.add(shoulderL, shoulderR);
+            function activateUI() {
+                document.getElementById('ui-wrapper').classList.add('visible');
+            }
 
-            // Lengan Atas
-            const armGeo = new THREE.CylinderGeometry(0.12, 0.1, 0.5, 16);
-            const armL = new THREE.Mesh(armGeo, metalMaterial);
-            armL.position.set(-0.95, 0.4, 0.1);
-            armL.rotation.z = 0.2; armL.rotation.x = -0.3;
-            const armR = armL.clone();
-            armR.position.x = 0.95; armR.rotation.z = -0.2;
-            robotGroup.add(armL, armR);
-
-            scene.add(robotGroup);
-
-            // 3. STATISTIK INTERAKSI VARIABEL & LOGIKA SENSOR ANIMASI ZOOM
-            let introPhase = 'none'; // Tahapan animasi: 'none', 'zooming_in', 'zooming_out', 'ready'
-            let introTimer = 0;
-            
-            // Variabel Drag Kontrol Mouse & Jari HP
+            // 4. MOUSE & TOUCH TRACKING SYSTEM
             let isDragging = false;
-            let previousPointerPosition = { x: 0, y: 0 };
-            let targetRotationX = 0;
-            let targetRotationY = 0;
+            let prevCoords = { x: 0, y: 0 };
+            let rotationTarget = { x: 0, y: 0 };
 
-            function startRobotIntroAnimation() {
-                introPhase = 'zooming_in';
-                introTimer = 0;
-                camera.position.z = 8; // Reset posisi awal kamera menjauh
+            function pointerDown(x, y) { if (viewPhase === 'active') { isDragging = true; prevCoords = { x, y }; } }
+            function pointerMove(x, y) {
+                if (!isDragging) return;
+                let dx = x - prevCoords.x; let dy = y - prevCoords.y;
+                rotationTarget.y += dx * 0.005; rotationTarget.x += dy * 0.005;
+                rotationTarget.x = Math.max(-0.5, Math.min(0.5, rotationTarget.x)); // Batasi putaran atas bawah
+                prevCoords = { x, y };
             }
+            function pointerUp() { isDragging = false; }
 
-            // Fungsi untuk mengaktifkan UI Menu secara perlahan pasca zoom out
-            function revealMainMenuUI() {
-                const uiWrapper = document.getElementById('ui-wrapper');
-                uiWrapper.classList.add('visible');
-            }
+            container.addEventListener('mousedown', (e) => pointerDown(e.clientX, e.clientY));
+            window.addEventListener('mousemove', (e) => pointerMove(e.clientX, e.clientY));
+            window.addEventListener('mouseup', pointerUp);
 
-            // 4. ANIMATION LOOP (RENDER TIMELINE)
-            const clock = new THREE.Clock();
+            container.addEventListener('touchstart', (e) => { if(e.touches.length===1) pointerDown(e.touches[0].clientX, e.touches[0].clientY); }, {passive:true});
+            window.addEventListener('touchmove', (e) => { if(e.touches.length===1) pointerMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive:true});
+            window.addEventListener('touchend', pointerUp);
 
-            function updateAnimation() {
-                requestAnimationFrame(updateAnimation);
-                const delta = clock.getDelta();
+            // LOOP ANIMASI UTAMA
+            function renderLoop() {
+                requestAnimationFrame(renderLoop);
+                let dt = clock.getDelta();
 
-                // LOGIKA SENSOR ZOOM SESUAI PERMINTAAN USER
-                if (introPhase === 'zooming_in') {
-                    // Kamera meluncur super dekat menembus wajah robot (Menciptakan ilusi dramatis)
-                    camera.position.z -= 11 * delta; 
-                    robotGroup.rotation.y += 2 * delta; // Sembari berputar cepat
-                    
-                    if (camera.position.z <= 1.5) { // Titik puncak zoom terdalam
-                        introPhase = 'zooming_out';
+                if (viewPhase === 'zooming_in') {
+                    camera.position.z -= 16 * dt; // Meluncur maju sangat cepat melewati objek
+                    botGroup.rotation.y += 3 * dt;
+                    if (camera.position.z <= 1.2) viewPhase = 'zooming_out';
+                } 
+                else if (viewPhase === 'zooming_out') {
+                    camera.position.z += 4 * dt; // Mundur perlahan ke posisi ideal
+                    botGroup.rotation.y += (0 - botGroup.rotation.y) * 0.1;
+                    if (camera.position.z >= 4.5) {
+                        camera.position.z = 4.5; viewPhase = 'active'; activateUI();
                     }
                 } 
-                else if (introPhase === 'zooming_out') {
-                    // Kamera kembali menjauh secara halus ke posisi framing ideal
-                    camera.position.z += 3 * delta;
+                else if (viewPhase === 'active') {
+                    // Berputar mengikuti kursor mouse / jari sentuh secara halus
+                    botGroup.rotation.y += (rotationTarget.y - botGroup.rotation.y) * 0.1;
+                    botGroup.rotation.x += (rotationTarget.x - botGroup.rotation.x) * 0.1;
                     
-                    // Kembalikan sudut rotasi robot ke posisi menghadap depan secara simetris
-                    robotGroup.rotation.y += (0 - robotGroup.rotation.y) * 0.08;
-                    robotGroup.rotation.x += (0 - robotGroup.rotation.x) * 0.08;
-
-                    if (camera.position.z >= 5.5) {
-                        camera.position.z = 5.5;
-                        introPhase = 'ready'; // Selesai zoom, robot diserahkan ke user
-                        revealMainMenuUI();   // Munculkan semua tombol menu utama
-                    }
-                } 
-                else if (introPhase === 'ready') {
-                    // Efek gerak ayun halus bernapas (idle animation) jika user sedang tidak menyentuh robot
-                    if (!isDragging) {
-                        robotGroup.rotation.y += (targetRotationY - robotGroup.rotation.y) * 0.05 + Math.sin(Date.now() * 0.001) * 0.001;
-                        robotGroup.rotation.x += (targetRotationX - robotGroup.rotation.x) * 0.05 + Math.cos(Date.now() * 0.001) * 0.0005;
-                    } else {
-                        robotGroup.rotation.y += (targetRotationY - robotGroup.rotation.y) * 0.15;
-                        robotGroup.rotation.x += (targetRotationX - robotGroup.rotation.x) * 0.15;
+                    // Efek melayang konstan (Idle Hovering)
+                    if(!isDragging) {
+                        botGroup.position.y = Math.sin(Date.now() * 0.0015) * 0.08;
+                        ringMesh.rotation.z += 0.005;
                     }
                 }
-
                 renderer.render(scene, camera);
             }
-            updateAnimation();
+            renderLoop();
 
-            // 5. MANAJEMEN EVENT POINTER DRAG (LAPTOP MOUSE & HP TOUCHSCREEN DRAG)
-            function onPointerDown(x, y) {
-                if (introPhase !== 'ready') return; // Kunci kontrol jika animasi zoom belum rampung
-                isDragging = true;
-                previousPointerPosition = { x, y };
-            }
+            // 5. FIXED ANTI-BUG TYPING EFFECT (Logika Berjalan Mulus)
+            const textArray = ["Spesialis Arsitektur Teknis.", "Analisis Struktur Lahan Lahan.", "Master Plan Konstruksi.", "Kustom Pola Grafis Decal."];
+            const typingText = document.querySelector(".typing-text");
+            let arrIdx = 0; let charIdx = 0; let isDeleting = false;
 
-            function onPointerMove(x, y) {
-                if (!isDragging) return;
+            function playTyping() {
+                if (!typingText) return;
+                let fullText = textArray[arrIdx];
                 
-                const deltaMove = {
-                    x: x - previousPointerPosition.x,
-                    y: y - previousPointerPosition.y
-                };
+                if (isDeleting) {
+                    typingText.textContent = fullText.substring(0, charIdx - 1);
+                    charIdx--;
+                } else {
+                    typingText.textContent = fullText.substring(0, charIdx + 1);
+                    charIdx++;
+                }
 
-                // Geser sumbu rotasi berdasarkan jarak seretan kursor/jari tangan
-                targetRotationY += deltaMove.x * 0.007;
-                targetRotationX += deltaMove.y * 0.007;
+                let speed = isDeleting ? 30 : 70;
 
-                // Batasi sudut rotasi vertikal (X) agar robot tidak jungkir balik aneh
-                targetRotationX = Math.max(-0.4, Math.min(0.4, targetRotationX));
-
-                previousPointerPosition = { x, y };
+                if (!isDeleting && charIdx === fullText.length) {
+                    speed = 2000; isDeleting = true; // Jeda saat teks penuh
+                } else if (isDeleting && charIdx === 0) {
+                    isDeleting = false; arrIdx = (arrIdx + 1) % textArray.length; speed = 400; // Ganti kalimat
+                }
+                setTimeout(playTyping, speed);
             }
+            setTimeout(playTyping, 1200);
 
-            function onPointerUp() {
-                isDragging = false;
-            }
+            // Lightbox System
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            document.querySelectorAll('.card-img-holder img').forEach(img => {
+                img.addEventListener('click', () => { lightboxImg.src = img.src; lightbox.classList.add('active'); });
+            });
+            document.getElementById('lightbox-close').addEventListener('click', () => lightbox.classList.remove('active'));
 
-            // Integrasi Event Listener Laptop (Mouse)
-            container.addEventListener('mousedown', (e) => onPointerDown(e.clientX, e.clientY));
-            window.addEventListener('mousemove', (e) => onPointerMove(e.clientX, e.clientY));
-            window.addEventListener('mouseup', onPointerUp);
-
-            // Integrasi Event Listener HP Smartphone (Touchscreen)
-            container.addEventListener('touchstart', (e) => {
-                if(e.touches.length === 1) onPointerDown(e.touches[0].clientX, e.touches[0].clientY);
-            }, { passive: true });
-            window.addEventListener('touchmove', (e) => {
-                if(e.touches.length === 1) onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
-            }, { passive: true });
-            window.addEventListener('touchend', onPointerUp);
-
-            // Penanganan Responsif Skala Ukuran Layar Browser
             window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
+                camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
             });
 
-            // 6. SISTEM COMPONENT TAMBAHAN (LIGHTBOX & AUTOTYPING)
-            const lightbox = document.getElementById('lightbox');
-            const lightboxImg = document.getElementById('lightbox-img');
-            const lightboxClose = document.getElementById('lightbox-close');
-            
-            document.querySelectorAll('.card-img-holder img').forEach(img => {
-                img.addEventListener('click', () => {
-                    lightboxImg.src = img.src;
-                    lightbox.classList.add('active');
-                });
-            });
-            lightboxClose.addEventListener('click', () => lightbox.classList.remove('active'));
-            lightbox.addEventListener('click', (e) => { if(e.target !== lightboxImg) lightbox.classList.remove('active'); });
-
-            // Efek Ketik Teks Berjalan Arsitektur
-            const textArray = ["Spesialis Rencana Teknis Arsitektur.", "Sketsa Denah & Akurasi Batas Tanah.", "Perencanaan Struktur Jangka Panjang.", "Pola Desain Decal Skala Akurat."];
-            const typingText = document.querySelector(".typing-text");
-            let textIndex = 0; let charIndex = 0;
-
-            function type() {
-                if (!typingText) return;
-                if (charIndex < textArray[textIndex].length) {
-                    typingText.textContent += textArray[textIndex].charAt(charIndex);
-                    charIndex++; setTimeout(type, 60);
-                } else { setTimeout(erase, 2500); }
-            }
-            function erase() {
-                if (charIndex > 0) {
-                    typingText.textContent = textArray[textIndex].substring(0, charIndex - 1);
-                    charIndex--; setTimeout(erase, 30);
-                } else { textIndex = (textIndex + 1) % textArray.length; setTimeout(type, 400); }
-            }
-            if (typingText) setTimeout(type, 1000);
-
-            // Animasi kartu bergulir muncul (Scroll Reveal)
+            // Card Scroll Reveal
             const cards = document.querySelectorAll('.card');
-            const observer = new IntersectionObserver(entries => {
-                entries.forEach(entry => {
-                    if(entry.isIntersecting) { entry.target.classList.add('show'); observer.unobserve(entry.target); }
-                });
-            }, { threshold: 0.1 });
-            cards.forEach(card => observer.observe(card));
-        })();
-    </script>
-</body>
-</html>
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--neon-white);
-            text-decoration: none;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-        }
-
-        .nav-links {
-            list-style: none;
-            display: flex;
-            gap: 30px;
-        }
-
-        .nav-links a {
-            color: var(--text-color);
-            text-decoration: none;
-            font-weight: 400;
-            transition: 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            color: var(--neon-white);
-            text-shadow: 0 0 8px var(--neon-white);
-        }
-
-        /* === HERO SECTION === */
-        .hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 0 10%;
-            position: relative;
-        }
-
-        .hero h1 {
-            font-size: 4.5rem;
-            color: var(--neon-white);
-            font-weight: 700;
-            margin-bottom: 10px;
-            text-shadow: 0 0 10px rgba(255,255,255,0.7), 0 0 20px rgba(255,255,255,0.3);
-        }
-
-        .typing-container {
-            font-size: 1.6rem;
-            font-weight: 300;
-            margin-bottom: 40px;
-            color: #cccccc;
-            height: 40px;
-        }
-
-        .typing-text::after {
-            content: '|';
-            animation: blink 0.7s infinite;
-            color: var(--neon-white);
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        /* === TOMBOL NEON === */
-        .neon-btn {
-            display: inline-block;
-            padding: 12px 35px;
-            color: var(--bg-color);
-            background-color: var(--neon-white);
-            border: 2px solid var(--neon-white);
-            border-radius: 30px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
-
-        .neon-btn:hover {
-            background-color: transparent;
-            color: var(--neon-white);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.8);
-            transform: translateY(-3px);
-        }
-
-        /* === CONTROLLER MENU SHADER === */
-        .shader-controls {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
-            background: rgba(7, 7, 7, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 8px 15px;
-            border-radius: 30px;
-            display: flex;
-            gap: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .ctrl-btn {
-            padding: 10px 18px;
-            font-size: 13px;
-            cursor: pointer;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.05);
-            color: #ccc;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .ctrl-btn:hover {
-            border-color: var(--neon-white);
-            color: var(--neon-white);
-        }
-
-        .ctrl-btn.active {
-            background-color: #ffffff;
-            color: #000000;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-            border-color: #ffffff;
-        }
-
-        /* === SECTION LAYANAN === */
-        .portfolio {
-            padding: 100px 10%;
-            text-align: center;
-            background: rgba(7, 7, 7, 0.7);
-            backdrop-filter: blur(5px);
-        }
-
-        .section-title {
-            font-size: 2.5rem;
-            color: var(--neon-white);
-            margin-bottom: 50px;
-            text-shadow: 0 0 8px rgba(255,255,255,0.6);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-        }
-
-        .card {
-            background: rgba(17, 17, 17, 0.8);
-            padding: 40px 20px;
-            border-radius: 15px;
-            border: 1px solid #222;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            transition: all 0.4s ease;
-            opacity: 0;
-            transform: translateY(30px);
-        }
-
-        .card.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .card:hover {
-            border-color: var(--neon-white);
-            box-shadow: 0 0 15px rgba(255,255,255,0.3);
-            transform: translateY(-10px);
-        }
-
-        .card h3 {
-            color: var(--neon-white);
-            margin-bottom: 15px;
-            font-size: 1.4rem;
-        }
-
-        .card p {
-            color: #888;
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-
-        /* === FOOTER & KONTAK === */
-        footer {
-            padding: 80px 10% 40px 10%;
-            text-align: center;
-            background: #050505;
-            border-top: 1px solid #111;
-        }
-
-        footer p {
-            margin-bottom: 30px;
-            color: #888;
-        }
-
-        .contact-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 3rem; }
-            .nav-links { display: none; }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- Canvas Background Shader -->
-    <div id="shader-container" aria-hidden="true"></div>
-
-    <!-- Navigasi -->
-    <nav>
-        <a href="#" class="logo">ParnoXAi.</a>
-        <ul class="nav-links">
-            <li><a href="#home">Beranda</a></li>
-            <li><a href="#projects">Layanan</a></li>
-            <li><a href="#contact">Kontak</a></li>
-        </ul>
-    </nav>
-
-    <!-- Hero Section -->
-    <main>
-        <section class="hero" id="home">
-            <h1>ParnoXAi</h1>
-            <div class="typing-container">
-                <span class="typing-text"></span>
-            </div>
-            <a href="#projects" class="neon-btn">Lihat Karya Saya</a>
-        </section>
-
-        <!-- Layanan Section -->
-        <section class="portfolio" id="projects">
-            <h2 class="section-title">Layanan Desain Kami</h2>
-            <div class="grid">
-                <div class="card">
-                    <h3>Desain Rumah</h3>
-                    <p>Perencanaan visual tata ruang dan arsitektur hunian modern, minimalis, estetis, serta fungsional.</p>
-                </div>
-                <div class="card">
-                    <h3>Desain Perusahaan</h3>
-                    <p>Pembuatan konsep arsitektur gedung kantor komersial, interior ruang kerja profesional, dan branding korporat.</p>
-                </div>
-                <div class="card">
-                    <h3>Desain Bangunan</h3>
-                    <p>Struktur arsitektur komprehensif untuk fasilitas umum, bangunan bertingkat, dan konstruksi modern.</p>
-                </div>
-                <div class="card">
-                    <h3>Desain Decal</h3>
-                    <p>Pembuatan grafis kustom striping/decal kendaraan beresolusi tinggi dengan konsep visual yang tajam dan berkarakter.</p>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Floating Shader Controller Menu -->
-    <div class="shader-controls" role="group" aria-label="Shader Controls">
-        <button class="ctrl-btn" id="btn-glow">Hyper Glow</button>
-        <button class="ctrl-btn" id="btn-silver">Silver Mode</button>
-        <button class="ctrl-btn" id="btn-dim">Disable Dimming</button>
-    </div>
-
-    <!-- Footer & Kontak -->
-    <footer id="contact">
-        <h2 class="section-title" style="font-size: 2rem; margin-bottom: 20px;">Mari Bekerja Sama</h2>
-        <p>Hubungi kami untuk memulai proyek desain profesional Anda.</p>
-        
-        <div class="contact-buttons">
-            <a href="mailto:kresnauwong@gmail.com" class="neon-btn">kresnauwong@gmail.com</a>
-            <a href="https://wa.me/6283834979782" target="_blank" rel="noopener" class="neon-btn">WA: 083834979782</a>
-        </div>
-        <p style="margin-top: 50px; font-size: 0.8rem; color: #444;">&copy; 2026 ParnoXAi Studio. All rights reserved.</p>
-    </footer>
-
-    <!-- === JAVASCRIPT ANIMASI & SHADER === -->
-    <script>
-        (() => {
-            // 1. Core Engine WebGL Shader
-            const container = document.getElementById('shader-container');
-            if (!container) return;
-
-            window.customShaderUniforms = {
-                iTime: { value: 0 },
-                iResolution: { value: new THREE.Vector2() },
-                iMouse: { value: new THREE.Vector2() },
-                brightGlow: { value: false },
-                silverMode: { value: false },
-                disableCenterDimming: { value: false }
-            };
-
-            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            container.appendChild(renderer.domElement);
-
-            const scene = new THREE.Scene();
-            const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-            const clock = new THREE.Clock();
-
-            const vertexShader = `
-                varying vec2 vTextureCoord;
-                void main() { vTextureCoord = uv; gl_Position = vec4(position, 1.0); }
-            `;
-
-            const fragmentShader = `
-                precision mediump float;
-                uniform vec2 iResolution;
-                uniform float iTime;
-                uniform vec2 iMouse;
-                uniform bool brightGlow;
-                uniform bool silverMode;
-                uniform bool disableCenterDimming;
-                varying vec2 vTextureCoord;
-
-                void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-                    vec2 uv = (2.0 * fragCoord - iResolution.xy) / min(iResolution.x, iResolution.y);
-                    vec2 center = iResolution.xy * 0.5;
-                    float dist = distance(fragCoord, center);
-                    float radius = min(iResolution.x, iResolution.y) * 0.5;
-                    float centerDim = disableCenterDimming ? 1.0 : smoothstep(radius * 0.2, radius * 0.6, dist);
-
-                    for(float i = 1.0; i < 10.0; i++){
-                        uv.x += 0.6 / i * cos(i * 2.5 * uv.y + iTime);
-                        uv.y += 0.6 / i * cos(i * 1.5 * uv.x + iTime);
-                    }
-                    
-                    if (brightGlow) { fragColor = vec4(vec3(0.18, 0.18, 0.22) / abs(sin(iTime - uv.y - uv.x)), 1.0); }
-                    else if (silverMode) { fragColor = vec4(vec3(0.08, 0.09, 0.12) / abs(sin(iTime - uv.y - uv.x)), 1.0); }
-                    else { fragColor = vec4(vec3(0.03, 0.03, 0.04) / abs(sin(iTime - uv.y - uv.x)), 1.0); }
-                    
-                    if (!disableCenterDimming) { fragColor.rgb = mix(fragColor.rgb * 0.2, fragColor.rgb, centerDim); }
-                }
-
-                void main() {
-                    vec4 color;
-                    mainImage(color, vTextureCoord * iResolution);
-                    gl_FragColor = color;
-                }
-            `;
-
-            const material = new THREE.ShaderMaterial({ vertexShader, fragmentShader, uniforms: window.customShaderUniforms });
-            const geometry = new THREE.PlaneGeometry(2, 2);
-            const mesh = new THREE.Mesh(geometry, material);
-            scene.add(mesh);
-
-            const onResize = () => {
-                const w = window.innerWidth; const h = window.innerHeight;
-                renderer.setSize(w, h); window.customShaderUniforms.iResolution.value.set(w, h);
-            };
-            window.addEventListener('resize', onResize); onResize();
-            window.addEventListener('mousemove', (e) => { window.customShaderUniforms.iMouse.value.set(e.clientX, e.clientY); });
-
-            const animate = () => {
-                requestAnimationFrame(animate);
-                window.customShaderUniforms.iTime.value = clock.getElapsedTime();
-                renderer.render(scene, camera);
-            };
-            animate();
-
-            // 2. Kontrol Interaksi Tombol
-            const uniforms = window.customShaderUniforms;
-            const btnGlow = document.getElementById('btn-glow');
-            const btnSilver = document.getElementById('btn-silver');
-            const btnDim = document.getElementById('btn-dim');
-
-            if (uniforms && btnGlow && btnSilver && btnDim) {
-                btnGlow.addEventListener('click', () => {
-                    uniforms.brightGlow.value = !uniforms.brightGlow.value;
-                    btnGlow.classList.toggle('active', uniforms.brightGlow.value);
-                    if(uniforms.brightGlow.value) { uniforms.silverMode.value = false; btnSilver.classList.remove('active'); }
-                });
-                btnSilver.addEventListener('click', () => {
-                    uniforms.silverMode.value = !uniforms.silverMode.value;
-                    btnSilver.classList.toggle('active', uniforms.silverMode.value);
-                    if(uniforms.silverMode.value) { uniforms.brightGlow.value = false; btnGlow.classList.remove('active'); }
-                });
-                btnDim.addEventListener('click', () => {
-                    uniforms.disableCenterDimming.value = !uniforms.disableCenterDimming.value;
-                    btnDim.classList.toggle('active', uniforms.disableCenterDimming.value);
-                });
-            }
-
-            // 3. Efek Mengetik Otomatis
-            const textArray = ["Spesialis Desain Rumah.", "Desain Perusahaan.", "Desain Bangunan.", "Kustom Desain Decal."];
-            const typingText = document.querySelector(".typing-text");
-            let textIndex = 0; let charIndex = 0;
-
-            function type() {
-                if (!typingText) return;
-                if (charIndex < textArray[textIndex].length) {
-                    typingText.textContent += textArray[textIndex].charAt(charIndex);
-                    charIndex++; setTimeout(type, 90);
-                } else { setTimeout(erase, 2200); }
-            }
-
-            function erase() {
-                if (charIndex > 0) {
-                    typingText.textContent = textArray[textIndex].substring(0, charIndex - 1);
-                    charIndex--; setTimeout(erase, 40);
-                } else { textIndex = (textIndex + 1) % textArray.length; setTimeout(type, 400); }
-            }
-            if (typingText) setTimeout(type, 1000);
-
-            // 4. Scroll Reveal Card Animation
-            const cards = document.querySelectorAll('.card');
-            const observer = new IntersectionObserver(entries => {
-                entries.forEach(entry => {
-                    if(entry.isIntersecting) { entry.target.classList.add('show'); observer.unobserve(entry.target); }
-                });
-            }, { threshold: 0.15 });
-            cards.forEach(card => observer.observe(card));
+            const obs = new IntersectionObserver(ents => { ents.forEach(e => { if(e.isIntersecting) { e.target.classList.add('show'); obs.unobserve(e.target); } }); }, {threshold:0.05});
+            cards.forEach(c => obs.observe(c));
         })();
     </script>
 </body>
