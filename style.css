@@ -1,80 +1,51 @@
-/* === VARIABEL WARNA & DASAR === */
-:root {
-    --bg-color: #070707; 
-    --text-color: #e0e0e0;
-    --neon-white: #ffffff;
+const textArray = ["Desain Rumah.", "Desain Perusahaan.", "Desain Decal.", "Desain Bangunan."];
+const typingText = document.querySelector(".typing-text");
+let textIndex = 0;
+let charIndex = 0;
+
+function type() {
+    if (charIndex < textArray[textIndex].length) {
+        typingText.textContent += textArray[textIndex].charAt(charIndex);
+        charIndex++;
+        setTimeout(type, 100);
+    } else {
+        setTimeout(erase, 2000);
+    }
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-    scroll-behavior: smooth;
+function erase() {
+    if (charIndex > 0) {
+        typingText.textContent = textArray[textIndex].substring(0, charIndex - 1);
+        charIndex--;
+        setTimeout(erase, 50);
+    } else {
+        textIndex++;
+        if (textIndex >= textArray.length) textIndex = 0;
+        setTimeout(type, 500);
+    }
 }
 
-body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    overflow-x: hidden;
-}
+document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(type, 1000);
+});
 
-#shader-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: -1;
-    background-color: #000;
-    pointer-events: none;
-}
+const cards = document.querySelectorAll('.card');
+const observerOptions = {
+    threshold: 0.2
+};
 
-/* === NAVIGASI === */
-nav {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    padding: 25px 10%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(7, 7, 7, 0.4);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    z-index: 1000;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
+const observer = new IntersectionObserver(function(entries, observer) {
+    entries.forEach(entry => {
+        if(entry.isIntersecting) {
+            entry.target.classList.add('show');
+            observer.unobserve(entry.target);
+        }
+    });
+}, observerOptions);
 
-.logo {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--neon-white);
-    text-decoration: none;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-}
-
-.nav-links {
-    list-style: none;
-    display: flex;
-    gap: 30px;
-}
-
-.nav-links a {
-    color: var(--text-color);
-    text-decoration: none;
-    font-weight: 400;
-    transition: 0.3s ease;
-}
-
-.nav-links a:hover {
-    color: var(--neon-white);
-    text-shadow: 0 0 8px var(--neon-white);
-}
-
-/* === HERO SECTION === */
-.hero {
-    height: 100vh;
+cards.forEach(card => {
+    observer.observe(card);
+});
     display: flex;
     flex-direction: column;
     justify-content: center;
