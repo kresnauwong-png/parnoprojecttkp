@@ -1,80 +1,51 @@
-:root {
-    --bg-color: #070707;
-    --text-color: #e0e0e0;
-    --neon-white: #ffffff;
-    --sidebar-width: 250px;
+const textArray = ["Desain Rumah.", "Desain Perusahaan.", "Desain Decal.", "Desain Bangunan."];
+const typingText = document.querySelector(".typing-text");
+let textIndex = 0;
+let charIndex = 0;
+
+function type() {
+    if (charIndex < textArray[textIndex].length) {
+        typingText.textContent += textArray[textIndex].charAt(charIndex);
+        charIndex++;
+        setTimeout(type, 100);
+    } else {
+        setTimeout(erase, 2000);
+    }
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-    scroll-behavior: smooth;
+function erase() {
+    if (charIndex > 0) {
+        typingText.textContent = textArray[textIndex].substring(0, charIndex - 1);
+        charIndex--;
+        setTimeout(erase, 50);
+    } else {
+        textIndex++;
+        if (textIndex >= textArray.length) textIndex = 0;
+        setTimeout(type, 500);
+    }
 }
 
-body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    display: flex;
-    min-height: 100vh;
-}
+document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(type, 1000);
+});
 
-.sidebar {
-    width: var(--sidebar-width);
-    background-color: #0a0a0a;
-    border-right: 1px solid #1a1a1a;
-    padding: 40px 20px;
-    position: fixed;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
+const cards = document.querySelectorAll('.card');
+const observerOptions = {
+    threshold: 0.2
+};
 
-.sidebar-header h2 {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--neon-white);
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-}
+const observer = new IntersectionObserver(function(entries, observer) {
+    entries.forEach(entry => {
+        if(entry.isIntersecting) {
+            entry.target.classList.add('show');
+            observer.unobserve(entry.target);
+        }
+    });
+}, observerOptions);
 
-.nav-links {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    margin-top: 40px;
-}
-
-.nav-links a {
-    color: var(--text-color);
-    text-decoration: none;
-    font-weight: 400;
-    transition: 0.3s ease;
-}
-
-.nav-links a:hover {
-    color: var(--neon-white);
-    text-shadow: 0 0 8px var(--neon-white);
-}
-
-.content {
-    margin-left: var(--sidebar-width);
-    flex: 1;
-}
-
-.hero {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-.hero h1 {
-    font-size: 5rem;
+cards.forEach(card => {
+    observer.observe(card);
+});
     font-weight: 700;
     margin-bottom: 10px;
     text-shadow: 0 0 10px rgba(255,255,255,0.7);
