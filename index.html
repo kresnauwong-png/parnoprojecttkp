@@ -3,78 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="favicon.png" type="image/png">
-    
-    <title>ParnoXAi Studio | Arsitektur & Desain Grafis Profesional</title>
-    <meta name="description" content="ParnoXAi Studio menyediakan layanan Desain Rumah, Perusahaan, Bangunan, dan Decal Kustom profesional.">
-
+    <title>ParnoXAi | Portofolio</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- === SCRIPT UTAMA SPLINE UNTUK HTML BISA (Tinggal Pakai) === -->
-    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.5/build/spline-viewer.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
 
-    <style>
-        :root {
-            --bg-color: #050505; 
-            --text-color: #e0e0e0;
-            --neon-white: #ffffff;
-        }
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>ParnoXAi.</h2>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home">Beranda</a></li>
+            <li><a href="#projects">Karya</a></li>
+            <li><a href="#contact">Kontak</a></li>
+        </ul>
+    </aside>
 
-        * {
-            margin: 0; padding: 0; box-sizing: border-box;
-            font-family: 'Poppins', sans-serif; scroll-behavior: smooth;
-        }
+    <main class="content">
+        <section class="hero" id="home">
+            <h1>ParnoXAi</h1>
+            <div class="typing-container">
+                <span class="typing-text"></span>
+            </div>
+            <a href="#projects" class="neon-btn">Lihat Karya Saya</a>
+        </section>
 
-        body {
-            background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden;
-        }
+        <section class="portfolio" id="projects">
+            <h2 class="section-title">Karya Terbaru</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Desain Rumah</h3>
+                    <p>Perencanaan visual tata ruang dan arsitektur hunian modern, minimalis, dan fungsional.</p>
+                </div>
+                <div class="card">
+                    <h3>Desain Perusahaan</h3>
+                    <p>Pembuatan konsep arsitektur gedung kantor komersial dan visual identitas korporat.</p>
+                </div>
+                <div class="card">
+                    <h3>Desain Decal</h3>
+                    <p>Desain striping kendaraan dengan detail presisi dan estetika yang kuat.</p>
+                </div>
+                <div class="card">
+                    <h3>Desain Bangunan</h3>
+                    <p>Konstruksi arsitektur komprehensif untuk berbagai fasilitas umum dan modern.</p>
+                </div>
+            </div>
+        </section>
 
-        /* === SPLINE BACKGROUND === */
-        .spline-background {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
-            background-color: #050505;
-        }
+        <footer class="footer" id="contact">
+            <h2 class="section-title">Mari Bekerja Sama</h2>
+            <p>Gmail: kresnauwong@gmail.com</p>
+            <p>No Telepon: 083834979782</p>
+        </footer>
+    </main>
 
-        /* NAVIGASI */
-        nav {
-            position: fixed; top: 0; width: 100%; padding: 25px 10%;
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(5, 5, 5, 0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            z-index: 1000; border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-        }
-        .logo { font-size: 1.5rem; font-weight: 700; color: var(--neon-white); text-decoration: none; }
-        .nav-links { list-style: none; display: flex; gap: 30px; }
-        .nav-links a { color: var(--text-color); text-decoration: none; transition: 0.3s; }
-        .nav-links a:hover { color: var(--neon-white); text-shadow: 0 0 8px var(--neon-white); }
-
-        /* HERO */
-        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 10%; }
-        .hero h1 { font-size: 4.5rem; color: var(--neon-white); font-weight: 700; margin-bottom: 10px; letter-spacing: 2px; pointer-events: none; }
-        .typing-container { font-size: 1.3rem; font-weight: 300; margin-bottom: 40px; color: #aaaaaa; height: 35px; pointer-events: none; }
-        .typing-text::after { content: '|'; animation: blink 0.7s infinite; color: var(--neon-white); }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-
-        .neon-btn {
-            display: inline-block; padding: 12px 35px; color: #000; background-color: #fff;
-            border: 2px solid #fff; border-radius: 30px; text-decoration: none; font-weight: 600;
-            transition: all 0.3s ease; cursor: pointer;
-        }
-        .neon-btn:hover { background-color: transparent; color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.4); transform: translateY(-2px); }
-
-        /* PORTFOLIO SECTION */
-        .portfolio { padding: 100px 10%; text-align: center; background: rgba(5, 5, 5, 0.9); backdrop-filter: blur(10px); position: relative; z-index: 10; }
-        .section-title { font-size: 2.2rem; color: var(--neon-white); margin-bottom: 50px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
-        
-        .card {
-            background: #0f0f0f; padding: 25px; border-radius: 15px; border: 1px solid #1a1a1a;
-            transition: all 0.4s ease; opacity: 0; transform: translateY(30px); text-align: left;
-        }
-        .card.show { opacity: 1; transform: translateY(0); }
-        .card:hover { border-color: #fff; transform: translateY(-8px); box-shadow: 0 10px 20px rgba(255,255,255,0.05); }
-
-        .card-img-holder {
-            width: 100%; height: 180px; border-radius: 10px; overflow: hidden; margin-bottom: 20px;
+    <script src="js/main.js"></script>
+</body>
+</html>
             background: #151515; border: 1px dashed #333; position: relative;
             display: flex; justify-content: center; align-items: center;
         }
