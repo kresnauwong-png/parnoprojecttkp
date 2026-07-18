@@ -7,10 +7,11 @@
     
     <title>ParnoXAi Studio | Arsitektur & Desain Grafis Profesional</title>
     <meta name="description" content="ParnoXAi Studio menyediakan layanan Desain Rumah, Perusahaan, Bangunan, dan Decal Kustom profesional.">
-    <meta name="author" content="ParnoXAi">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- === SCRIPT UTAMA SPLINE UNTUK HTML BISA (Tinggal Pakai) === -->
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.5/build/spline-viewer.js"></script>
 
     <style>
         :root {
@@ -28,36 +29,17 @@
             background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden;
         }
 
-        /* === LAYAR LOADING === */
-        #loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #050505; z-index: 9999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 0.6s ease, visibility 0.6s ease;
-        }
-        .loader-title {
-            font-size: 1.8rem; font-weight: 700; color: var(--neon-white);
-            letter-spacing: 5px; margin-bottom: 15px;
-        }
-        .loader-bar-container { width: 180px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
-        .loader-bar { width: 0%; height: 100%; background-color: var(--neon-white); transition: width 0.1s linear; }
-
-        /* === 3D CANVAS BACKGROUND === */
-        #robot-container {
+        /* === SPLINE BACKGROUND === */
+        .spline-background {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
-            background-color: #050505; cursor: grab;
+            background-color: #050505;
         }
-        #robot-container:active { cursor: grabbing; }
-
-        /* INTERACTIVE UI ANIMATION LAYER */
-        .interactive-ui { opacity: 0; pointer-events: none; transition: opacity 1.2s ease; }
-        .interactive-ui.visible { opacity: 1; pointer-events: all; }
 
         /* NAVIGASI */
         nav {
             position: fixed; top: 0; width: 100%; padding: 25px 10%;
             display: flex; justify-content: space-between; align-items: center;
-            background: rgba(5, 5, 5, 0.5); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            background: rgba(5, 5, 5, 0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             z-index: 1000; border-bottom: 1px solid rgba(255, 255, 255, 0.02);
         }
         .logo { font-size: 1.5rem; font-weight: 700; color: var(--neon-white); text-decoration: none; }
@@ -67,14 +49,180 @@
 
         /* HERO */
         .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 10%; }
-        .hero h1 { font-size: 4.5rem; color: var(--neon-white); font-weight: 700; margin-bottom: 10px; letter-spacing: 2px; }
-        .typing-container { font-size: 1.3rem; font-weight: 300; margin-bottom: 40px; color: #aaaaaa; height: 35px; }
+        .hero h1 { font-size: 4.5rem; color: var(--neon-white); font-weight: 700; margin-bottom: 10px; letter-spacing: 2px; pointer-events: none; }
+        .typing-container { font-size: 1.3rem; font-weight: 300; margin-bottom: 40px; color: #aaaaaa; height: 35px; pointer-events: none; }
         .typing-text::after { content: '|'; animation: blink 0.7s infinite; color: var(--neon-white); }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
         .neon-btn {
             display: inline-block; padding: 12px 35px; color: #000; background-color: #fff;
             border: 2px solid #fff; border-radius: 30px; text-decoration: none; font-weight: 600;
+            transition: all 0.3s ease; cursor: pointer;
+        }
+        .neon-btn:hover { background-color: transparent; color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.4); transform: translateY(-2px); }
+
+        /* PORTFOLIO SECTION */
+        .portfolio { padding: 100px 10%; text-align: center; background: rgba(5, 5, 5, 0.9); backdrop-filter: blur(10px); position: relative; z-index: 10; }
+        .section-title { font-size: 2.2rem; color: var(--neon-white); margin-bottom: 50px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        
+        .card {
+            background: #0f0f0f; padding: 25px; border-radius: 15px; border: 1px solid #1a1a1a;
+            transition: all 0.4s ease; opacity: 0; transform: translateY(30px); text-align: left;
+        }
+        .card.show { opacity: 1; transform: translateY(0); }
+        .card:hover { border-color: #fff; transform: translateY(-8px); box-shadow: 0 10px 20px rgba(255,255,255,0.05); }
+
+        .card-img-holder {
+            width: 100%; height: 180px; border-radius: 10px; overflow: hidden; margin-bottom: 20px;
+            background: #151515; border: 1px dashed #333; position: relative;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .card-img-holder img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* FOOTER & CONTACT FORM */
+        footer { padding: 80px 10% 40px 10%; text-align: center; background: #020202; border-top: 1px solid #111; position: relative; z-index: 10; }
+        .form-container { max-width: 600px; margin: 0 auto 50px auto; background: #0a0a0a; padding: 40px; border-radius: 15px; border: 1px solid #151515; text-align: left; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 0.75rem; color: #888; margin-bottom: 8px; font-weight: 600; letter-spacing: 1px; }
+        .form-control { width: 100%; padding: 12px 15px; background: #111; border: 1px solid #222; border-radius: 8px; color: #fff; font-size: 0.95rem; }
+        .form-control:focus { outline: none; border-color: #fff; }
+        .form-submit-btn { width: 100%; margin-top: 10px; }
+        .contact-buttons { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+
+        @media (max-width: 768px) { .hero h1 { font-size: 2.8rem; } .nav-links { display: none; } .form-container { padding: 25px; } }
+    </style>
+</head>
+<body>
+
+    <!-- === KONTEN BOT 3D REVOLUSIONER DARI SPLINE === -->
+    <div class="spline-background">
+        <!-- Ganti isi URL di bawah ini dengan link .splinecode hasil desain tokomu -->
+        <spline-viewer url="https://prod.spline.design/6W6631v7fSg79Z8Z/scene.splinecode"></spline-viewer>
+    </div>
+
+    <!-- UI LAYER -->
+    <nav>
+        <a href="#" class="logo">ParnoXAi.</a>
+        <ul class="nav-links">
+            <li><a href="#home">Beranda</a></li>
+            <li><a href="#projects">Layanan</a></li>
+            <li><a href="#contact">Kontak</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="hero" id="home">
+            <h1>ParnoXAi</h1>
+            <div class="typing-container">
+                <span class="typing-text"></span>
+            </div>
+            <a href="#projects" class="neon-btn">Mulai Eksplorasi</a>
+        </section>
+
+        <section class="portfolio" id="projects">
+            <h2 class="section-title">Layanan Desain Kami</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-img-holder">
+                        <img src="rumah.jpg" alt="Desain Rumah" onerror="this.style.display='none'">
+                    </div>
+                    <h3>Desain Rumah</h3>
+                    <p>Perencanaan visual tata ruang dan arsitektur hunian modern, minimalis, estetis, serta fungsional.</p>
+                </div>
+                <div class="card">
+                    <div class="card-img-holder">
+                        <img src="perusahaan.jpg" alt="Desain Perusahaan" onerror="this.style.display='none'">
+                    </div>
+                    <h3>Desain Perusahaan</h3>
+                    <p>Pembuatan konsep arsitektur gedung kantor komersial, interior ruang kerja profesional, dan fungsionalitas korporat.</p>
+                </div>
+                <div class="card">
+                    <div class="card-img-holder">
+                        <img src="bangunan.jpg" alt="Desain Bangunan" onerror="this.style.display='none'">
+                    </div>
+                    <h3>Desain Bangunan</h3>
+                    <p>Struktur arsitektur komprehensif untuk fasilitas umum, bangunan bertingkat, dan konstruksi modern.</p>
+                </div>
+                <div class="card">
+                    <div class="card-img-holder">
+                        <img src="decal.jpg" alt="Desain Decal" onerror="this.style.display='none'">
+                    </div>
+                    <h3>Desain Decal</h3>
+                    <p>Pembuatan grafis kustom striping/decal kendaraan beresolusi tinggi dengan konsep visual tajam.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="contact">
+        <div class="form-container">
+            <form action="https://api.web3forms.com/submit" method="POST">
+                <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE">
+                <div class="form-group">
+                    <label>NAMA LENGKAP</label>
+                    <input type="text" name="name" class="form-control" placeholder="Nama Anda..." required>
+                </div>
+                <div class="form-group">
+                    <label>ALAMAT EMAIL</label>
+                    <input type="email" name="email" class="form-control" placeholder="nama@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>DESKRIPSI PROYEK LAHAN</label>
+                    <textarea name="message" rows="4" class="form-control" placeholder="Detail lokasi lahan & ukuran tanah..." required></textarea>
+                </div>
+                <button type="submit" class="neon-btn form-submit-btn">Kirim Formulir Kerja Sama</button>
+            </form>
+        </div>
+        <div class="contact-buttons">
+            <a href="mailto:kresnauwong@gmail.com" class="neon-btn">kresnauwong@gmail.com</a>
+            <a href="https://wa.me/6283834979782" target="_blank" rel="noopener noreferrer" class="neon-btn">WhatsApp Fast Response</a>
+        </div>
+    </footer>
+
+    <!-- === LOGIKA SCRIPT JAVASCRIPT === -->
+    <script>
+        (() => {
+            // Anti-Bug Typing Effect
+            const textArray = ["Spesialis Arsitektur Teknis.", "Analisis Struktur Lahan.", "Master Plan Konstruksi.", "Kustom Pola Grafis Decal."];
+            const typingText = document.querySelector(".typing-text");
+            let arrIdx = 0; let charIdx = 0; let isDeleting = false;
+
+            function playTyping() {
+                if (!typingText) return;
+                let fullText = textArray[arrIdx];
+                
+                if (isDeleting) {
+                    typingText.textContent = fullText.substring(0, charIdx - 1);
+                    charIdx--;
+                } else {
+                    typingText.textContent = fullText.substring(0, charIdx + 1);
+                    charIdx++;
+                }
+
+                let speed = isDeleting ? 35 : 70;
+
+                if (!isDeleting && charIdx === fullText.length) {
+                    speed = 2000; isDeleting = true;
+                } else if (isDeleting && charIdx === 0) {
+                    isDeleting = false; arrIdx = (arrIdx + 1) % textArray.length; speed = 400;
+                }
+                setTimeout(playTyping, speed);
+            }
+            setTimeout(playTyping, 500);
+
+            // Card Scroll Reveal
+            const cards = document.querySelectorAll('.card');
+            const obs = new IntersectionObserver(ents => { 
+                ents.forEach(e => { 
+                    if(e.isIntersecting) { e.target.classList.add('show'); obs.unobserve(e.target); } 
+                }); 
+            }, {threshold:0.05});
+            cards.forEach(c => obs.observe(c));
+        })();
+    </script>
+</body>
+</html>
             transition: all 0.3s ease; cursor: pointer;
         }
         .neon-btn:hover { background-color: transparent; color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.4); transform: translateY(-2px); }
