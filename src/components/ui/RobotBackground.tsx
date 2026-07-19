@@ -4,9 +4,14 @@ import * as THREE from 'three';
 interface RobotBackgroundProps {
   triggerZoom?: boolean;
   onZoomComplete?: () => void;
+  isIntroMode?: boolean;
 }
 
-const RobotBackground: React.FC<RobotBackgroundProps> = ({ triggerZoom = false, onZoomComplete }) => {
+const RobotBackground: React.FC<RobotBackgroundProps> = ({ 
+  triggerZoom = false, 
+  onZoomComplete,
+  isIntroMode = true 
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const eagleRef = useRef<THREE.Group | null>(null);
@@ -21,7 +26,7 @@ const RobotBackground: React.FC<RobotBackgroundProps> = ({ triggerZoom = false, 
     // --- 1. Scene & Camera Setup ---
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 2, 7);
+    camera.position.set(0, 1.5, 6); // Kamera fokus menatap elang
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -30,45 +35,132 @@ const RobotBackground: React.FC<RobotBackgroundProps> = ({ triggerZoom = false, 
     container.appendChild(renderer.domElement);
 
     // --- 2. Lighting ---
-    const ambient = new THREE.AmbientLight(0x0f172a, 2);
+    const ambient = new THREE.AmbientLight(0x0f172a, 2.5);
     scene.add(ambient);
-    const cyanLight = new THREE.PointLight(0x06b6d4, 5, 50);
+    const cyanLight = new THREE.PointLight(0x06b6d4, 6, 50);
     cyanLight.position.set(5, 5, 5);
     scene.add(cyanLight);
 
-    // --- 3. Objek Ranting Pohon Cyber ---
-    const branchGeo = new THREE.CylinderGeometry(0.1, 0.15, 6, 8);
-    const branchMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8 });
-    const branch = new THREE.Mesh(branchGeo, branchMat);
-    branch.rotation.z = Math.PI / 2.5;
-    branch.position.set(0, -1, 0);
-    scene.add(branch);
+    // --- 3. Batang Pohon Tegak (Mirip Referensi Foto) ---
+    const trunkGeo = new THREE.CylinderGeometry(0.2, 0.3, 5, 10);
+    const trunkMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.9 });
+    const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+    trunk.position.set(0, -2.2, 0); // Berdiri tegak di bawah elang
+    scene.add(trunk);
 
-    // --- 4. Objek 3D Elang Mekanis (Abstrak Futuristik) ---
+    // --- 4. Objek 3D Elang Cyber Gahar ---
     const eagle = new THREE.Group();
-    const bodyMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.9, roughness: 0.1 });
-    const neonMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4 }); // Mata Cyan Glow
+    const bodyMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.8, roughness: 0.15 });
+    const neonMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4 }); // Mata Menyala Cyan
 
     // Badan Elang
-    const bodyGeo = new THREE.ConeGeometry(0.5, 1.5, 4);
+    const bodyGeo = new THREE.ConeGeometry(0.4, 1.3, 5);
     const body = new THREE.Mesh(bodyGeo, bodyMat);
-    body.rotation.x = Math.PI / 4;
+    body.rotation.x = Math.PI / 6;
     eagle.add(body);
 
     // Kepala Elang
-    const headGeo = new THREE.SphereGeometry(0.35, 8, 8);
+    const headGeo = new THREE.SphereGeometry(0.3, 10, 10);
     const head = new THREE.Mesh(headGeo, bodyMat);
-    head.position.set(0, 0.7, 0.4);
+    head.position.set(0, 0.6, 0.3);
     eagle.add(head);
 
-    // Mata Elang (Fokus Utama untuk Zoom)
-    const eyeGeo = new THREE.SphereGeometry(0.06, 8, 8);
+    // Mata Elang (Titik Target Zooming)
+    const eyeGeo = new THREE.SphereGeometry(0.05, 8, 8);
     const leftEye = new THREE.Mesh(eyeGeo, neonMat);
-    leftEye.position.set(-0.15, 0.8, 0.65);
+    leftEye.position.set(-0.13, 0.68, 0.52);
     const rightEye = new THREE.Mesh(eyeGeo, neonMat);
-    rightEye.position.set(0.15, 0.8, 0.65);
+    rightEye.position.set(0.13, 0.68, 0.52);
     eagle.add(leftEye);
     eagle.add(rightEye);
+
+    // Sayap Kiri Lebar
+    const wingGeo = new THREE.BoxGeometry(1.6, 0.04, 0.7);
+    const leftWing = new THREE.Mesh(wingGeo, bodyMat);
+    // Pindahkan pivot ke ujung sayap agar engsel kepakan natural
+    leftWing.geometry.translate(-0.8, 0, 0);
+    leftWing.position.set(-0.3, 0.4, 0);
+    eagle.add(leftWing);
+    leftWingRef.current = leftWing;
+
+    // Sayap Kanan Lebar
+    const rightWing = new THREE.Mesh(wingGeo, bodyMat);
+    rightWing.geometry.translate(0.8, 0, 0);
+    rightWing.position.set(0.3, 0.4, 0);
+    eagle.add(rightWing);
+    rightWingRef.current = rightWing;
+
+    // Posisikan elang pas hinggap di atas ujung batang pohon
+    eagle.position.set(0, 0.3, 0);
+    scene.add(eagle);
+    eagleRef.current = eagle;
+
+    // --- 5. Loop Animasi ---
+    let animationFrameId: number;
+    let time = 0;
+
+    const animate = () => {
+      animationFrameId = requestAnimationFrame(animate);
+      time += 0.03;
+
+      if (isIntroMode || triggerZoom) {
+        // Mode Awal/Intro: Elang hinggap tegak sambil terus mengepakkan sayapnya lebar-lebar dengan gagah
+        if (leftWing && rightWing) {
+          leftWing.rotation.z = Math.sin(time * 5) * 0.35;
+          rightWing.rotation.z = -Math.sin(time * 5) * 0.35;
+        }
+        // Efek napas naik turun halus di batang pohon
+        eagle.position.y = 0.3 + Math.sin(time * 2) * 0.03;
+      } else {
+        // Mode saat halaman terbuka: Sayap melipat tenang, elang bernapas rileks
+        if (leftWing && rightWing) {
+          leftWing.rotation.z += (0.1 - leftWing.rotation.z) * 0.05;
+          rightWing.rotation.z += (-0.1 - rightWing.rotation.z) * 0.05;
+        }
+        eagle.position.y = 0.3 + Math.sin(time * 1) * 0.01;
+      }
+
+      // Aksi Zoom Menembus Mata Kanan Elang pas dipicu
+      if (isZoomingRef.current && camera) {
+        camera.position.x += (0.13 - camera.position.x) * 0.1;
+        camera.position.y += (0.98 - camera.position.y) * 0.1;
+        camera.position.z += (0.7 - camera.position.z) * 0.1;
+        
+        // Jika kamera sudah menembus/sangat dekat dengan kornea mata
+        if (camera.position.z <= 0.9) {
+          isZoomingRef.current = false;
+          if (onZoomComplete) onZoomComplete();
+        }
+      }
+
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    const handleResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('resize', handleResize);
+      container.removeChild(renderer.domElement);
+    };
+  }, [onZoomComplete, isIntroMode, triggerZoom]);
+
+  useEffect(() => {
+    if (triggerZoom) {
+      isZoomingRef.current = true;
+    }
+  }, [triggerZoom]);
+
+  return <div ref={containerRef} className="fixed inset-0 z-0 bg-[#020617] pointer-events-none" />;
+};
+
+export default RobotBackground;
 
     // Sayap Kiri
     const wingGeo = new THREE.BoxGeometry(1.5, 0.05, 0.6);
